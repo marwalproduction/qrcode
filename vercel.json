@@ -1,32 +1,9 @@
 {
   "version": 2,
-  "builds": [
-    {
-      "src": "api/index.js",
-      "use": "@vercel/node"
-    }
-  ],
   "routes": [
-    {
-      "src": "/api/sessions",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/api/sessions/(.*)",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/api/verify",
-      "dest": "/api/index.js"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/api/index.js"
-    }
-  ],
-  "functions": {
-    "api/index.js": {
-      "maxDuration": 30
-    }
-  }
+    { "src": "/api/sessions", "dest": "/api/index.js" },
+    { "src": "/api/sessions/(.*)", "dest": "/api/index.js" },
+    { "src": "/api/verify", "dest": "/api/index.js" },
+    { "src": "/(.*)", "dest": "/api/index.js" }
+  ]
 } 
