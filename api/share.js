@@ -8,7 +8,7 @@ const sessions = global._shareSessions = global._shareSessions || new Map();
 
 // Multer setup for file uploads (in memory)
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } }); // 2MB limit
+const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 2MB limit
 
 // Serve the share page (GET)
 app.get('/', (req, res) => {
