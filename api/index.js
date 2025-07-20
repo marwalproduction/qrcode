@@ -16,6 +16,9 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 
+const shareRouter = require('./share');
+app.use('/share', shareRouter);
+
 // In-memory store: sid -> { qrData }
 // Note: In serverless, this will reset on each cold start
 const sessions = new Map();
@@ -32,13 +35,12 @@ app.post('/api/sessions', async (req, res) => {
     return res.status(400).json({ error: 'Missing required fields sid or url' });
   }
 
-  // Generate verify URL for QR
+  // Generate share URL for QR
   const host = req.get('host');       // e.g. "qrcode-yktu.vercel.app"
   const proto = req.protocol;          // "https"
-  const verifyUrl = `${proto}://${host}/api/verify?sid=${sid}&url=${encodeURIComponent(url)}`;
-  
+  const shareUrl = `${proto}://${host}/share?sid=${sid}`;
   try {
-    const qrData = await QRCode.toDataURL(verifyUrl);
+    const qrData = await QRCode.toDataURL(shareUrl);
     sessions.set(sid, { qrData });
     res.json({ qrData });
   } catch (err) {
