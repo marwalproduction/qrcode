@@ -1,7 +1,7 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
-const app = express();
+const router = express.Router();
 const QRCode = require('qrcode');
 
 // In-memory store for shared data (for demo, not persistent)
@@ -340,7 +340,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
 }
 
 // Landing page with hero, about, and live QR code
-app.get('/', async (req, res) => {
+router.get('/', async (req, res) => {
   // Generate a random session ID
   const sid = Math.random().toString(36).slice(2);
   // The QR code should point to the /share page for this session
@@ -474,7 +474,7 @@ app.get('/', async (req, res) => {
 });
 
 // Serve the share page (GET)
-app.get('/share', (req, res) => {
+router.get('/share', (req, res) => {
   const { sid, msg, type, url } = req.query;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error' }));
@@ -483,7 +483,7 @@ app.get('/share', (req, res) => {
 });
 
 // Handle form submission (POST)
-app.post('/share', upload.array('image'), (req, res) => {
+router.post('/share', upload.array('image'), (req, res) => {
   const { sid, url } = req.body;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', urlValue: url }));
@@ -506,7 +506,7 @@ app.post('/share', upload.array('image'), (req, res) => {
 });
 
 // API for extension to poll for shared data
-app.get('/poll', (req, res) => {
+router.get('/poll', (req, res) => {
   const { sid } = req.query;
   if (!sid) return res.status(400).json({ error: 'Missing sid' });
   const shared = sessions.get(sid);
@@ -516,4 +516,4 @@ app.get('/poll', (req, res) => {
   res.json({ status: 'ready', shared });
 });
 
-module.exports = app; 
+module.exports = router; 
