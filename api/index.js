@@ -117,15 +117,6 @@ app.get('/api/sessions/:sid/credentials', (req, res) => {
   });
 });
 
-// Health check endpoint
-app.get('/', (req, res) => {
-  res.json({ 
-    message: 'ZapKey QR Login Backend is running!',
-    status: 'healthy',
-    timestamp: new Date().toISOString(),
-    deployment: 'https://qrcode-yktu.vercel.app/'
-  });
-});
 
 // For Vercel deployment
 module.exports = app; 
