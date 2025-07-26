@@ -8,177 +8,309 @@ const sessions = global._shareSessions = global._shareSessions || new Map();
 
 // Multer setup for file uploads (in memory)
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 10MB limit
+const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } }); // 2MB limit
 
-// Serve the share page with new UI
-app.get('/', (req, res) => {
-  const { sid } = req.query;
-  if (!sid) {
-    return res.status(400).send('Missing session ID (sid)');
-  }
-
-  res.send(`
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Share with ZapKey</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600;700&family=Manrope:wght@400;600;700&family=Space+Grotesk:wght@400;600;700&family=Inter:wght@400;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Poppins', 'Segoe UI', Arial, sans-serif;
-      background: #f7f8fa;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      max-width: 440px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 18px;
-      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
-      padding: 8px 18px 28px 18px;
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-    }
-    h2 {
-      background: linear-gradient(90deg, #2563eb, #3b82f6);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      font-size: 3.5rem;
-      font-weight: 700;
-      margin: 0;
-      line-height: 1.2;
-      text-align: left;
-      width: 100%;
-    }
-    .label {
-      font-size: 1rem;
-      color: #222;
-      font-weight: 600;
-      margin-top: 20px;
-      display: block;
-    }
-    input[type="url"], input[type="file"] {
-      width: 100%;
-      padding: 14px 16px;
-      font-size: 1rem;
-      border: 1.5px solid #d1d5db;
-      border-radius: 10px;
-      background-color: #f9fafb;
-      color: #111827;
-      box-sizing: border-box;
-      margin-top: 6px;
-    }
-    .upload-area {
-      width: 100%;
-      height: 160px;
-      border: 2.5px dashed #2563eb55;
-      border-radius: 16px;
-      background: #f1f5fd;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      margin: 18px 0 10px 0;
-      cursor: pointer;
-    }
-    .upload-icon {
-      font-size: 3.2rem;
-      color: #2563eb;
-      margin-bottom: 10px;
-    }
-    .upload-text {
-      color: #6b7280;
-      font-size: 1rem;
-      font-weight: 400;
-      text-align: center;
-    }
-    .share-btn {
-      width: 100%;
-      padding: 15px 0;
-      border-radius: 10px;
-      border: none;
-      background: linear-gradient(90deg, #2563eb 0%, #3b82f6 100%);
-      color: #fff;
-      font-size: 1.18rem;
-      font-weight: 700;
-      letter-spacing: 0.04em;
-      margin-top: 18px;
-      box-shadow: 0 2px 12px #2563eb22;
-      cursor: pointer;
-    }
-    @media (max-width: 500px) {
-      .container { max-width: 98vw; padding: 18px 4vw; }
-      h2 { font-size: 2.5rem; }
-    }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <h2 style="font-size: 1.4rem; font-weight: 500; color: #111827; text-align: left;">Share everything with</h2>
-    <h2>ZapKey</h2>
-    <form method="POST" enctype="multipart/form-data" style="width: 100%;">
-      <input type="hidden" name="sid" value="${sid}" />
-      <label class="label">Share a URL:</label>
-      <input type="url" name="url" placeholder="https://example.com" />
-      <label class="label">Or upload a file:</label>
-      <div class="upload-area" onclick="document.getElementById('file').click();">
-        <div class="upload-icon">⬆️</div>
-        <div class="upload-text">
-          Click or drag file here<br>
-          <span style="font-size: 0.8rem;">(PDF, JPG, PNG, WEBP, GIF, up to 10MB)</span>
-        </div>
-        <input type="file" name="image" id="file" accept="application/pdf,image/jpeg,image/png,image/webp,image/gif" style="display: none;" />
+function renderSharePage({ sid, message, messageType, urlValue }) {
+  return `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>ZapKey Dark Glass UI</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        @font-face {
+          font-family: 'SF Pro Display';
+          src: url('https://fonts.cdnfonts.com/s/59163/SFProDisplay-Regular.woff') format('woff');
+          font-weight: 100 900;
+        }
+        body {
+          font-family: 'SF Pro Display', sans-serif;
+          margin: 0;
+          padding: 0;
+          background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 100vh;
+        }
+        .container {
+          width: 95%;
+          max-width: 460px;
+          background: rgba(30, 30, 30, 0.6);
+          border-radius: 20px;
+          padding: 24px;
+          backdrop-filter: blur(14px);
+          box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+          color: #f1f1f1;
+        }
+        h2.intro-text {
+          margin: 0;
+          font-size: 1.2rem;
+          font-weight: 300;
+          color: #ccc;
+        }
+        h2.brand-text {
+          margin-top: 4px;
+          font-size: 3.5rem;
+          font-weight: 700;
+          background: linear-gradient(90deg, #0072ff, #002561);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .msg {
+          width: 100%;
+          margin-bottom: 18px;
+          padding: 12px 16px;
+          border-radius: 10px;
+          font-size: 1.05rem;
+          font-weight: 500;
+          text-align: center;
+        }
+        .msg.error {
+          background: rgba(255, 0, 60, 0.13);
+          color: #ff4b6b;
+          border: 1px solid #ff4b6b;
+        }
+        .msg.success {
+          background: rgba(0, 180, 90, 0.13);
+          color: #00e07a;
+          border: 1px solid #00e07a;
+        }
+        input[type="url"] {
+          width: -webkit-fill-available;
+          padding: 12px 16px;
+          font-size: 1rem;
+          border: 1px solid #444;
+          border-radius: 10px;
+          background-color: rgba(255, 255, 255, 0.05);
+          color: #eee;
+          margin: 18px 0 10px;
+        }
+        input[type="url"]::placeholder {
+          color: #888;
+          font-weight: 200;
+        }
+        #paste-btn {
+          width: 100%;
+          padding: 12px;
+          font-size: 1rem;
+          border-radius: 10px;
+          background: rgba(59, 130, 246, 0.2);
+          color: #3b82f6;
+          border: 1px solid #3b82f6;
+          margin-bottom: 16px;
+          cursor: pointer;
+        }
+        .upload-area {
+          width: 100%;
+          height: 160px;
+          border: 2px dashed #3b82f6;
+          border-radius: 14px;
+          background: rgba(255, 255, 255, 0.04);
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          margin-bottom: 16px;
+        }
+        .upload-area.dragover {
+          border-color: #0072ff;
+        }
+        .upload-icon svg {
+          fill: #3b82f6;
+          height: 48px;
+          margin-bottom: 8px;
+        }
+        .upload-text {
+          text-align: center;
+          font-size: 0.95rem;
+          color: #ccc;
+        }
+        .upload-text small {
+          font-size: 0.8rem;
+          color: #666;
+        }
+        .file-input {
+          display: none;
+        }
+        .share-btn {
+          width: 100%;
+          padding: 14px;
+          font-size: 1.1rem;
+          border: none;
+          border-radius: 10px;
+          background: linear-gradient(to right, #0036af, #004dd0, #003c9e);
+          color: white;
+          font-weight: 500;
+          cursor: pointer;
+          margin-top: 12px;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h2 class="intro-text">Share everything with</h2>
+        <h2 class="brand-text">ZapKey</h2>
+        ${message ? `<div class="msg ${messageType}">${message}</div>` : ''}
+        <form method="POST" enctype="multipart/form-data" id="shareForm">
+          <input type="hidden" name="sid" value="${sid}" />
+          <input type="url" name="url" placeholder="Share a URL: https://example.com" id="urlInput" value="${urlValue ? urlValue.replace(/"/g, '&quot;') : ''}" />
+          <button type="button" id="paste-btn">Paste Last Copied</button>
+          <label class="upload-area" id="uploadArea">
+            <div class="upload-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40">
+                <path fill="currentColor" d="M12 16a1 1 0 01-1-1V8.41l-2.3 2.3a1 1 0 01-1.4-1.42l4-4a1 1 0 011.4 0l4 4a1 1 0 01-1.4 1.42L13 8.41V15a1 1 0 01-1 1z" />
+                <path fill="currentColor" d="M5 18a1 1 0 100 2h14a1 1 0 100-2H5z"/>
+              </svg>
+            </div>
+            <div class="upload-text">
+              Click to upload file<br>
+              <small>(PDF, JPG, PNG, JPEG, WEBP, GIF, up to 10MB)</small>
+            </div>
+            <input type="file" name="image" class="file-input" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" id="fileInput" />
+          </label>
+          <button type="submit" class="share-btn">Share</button>
+        </form>
       </div>
-      <button type="submit" class="share-btn">Share</button>
-    </form>
-  </div>
-</body>
-</html>
-  `);
+      <script>
+        // Paste Last Copied
+        document.getElementById('paste-btn').onclick = async function(e) {
+          e.preventDefault();
+          if (navigator.clipboard) {
+            try {
+              const text = await navigator.clipboard.readText();
+              document.getElementById('urlInput').value = text;
+            } catch (err) {
+              alert('Could not read clipboard.');
+            }
+          } else {
+            alert('Clipboard API not supported.');
+          }
+        };
+        // Drag and drop/click upload
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        // Add preview/cancel elements
+        const previewDiv = document.createElement('div');
+        previewDiv.style.width = '100%';
+        previewDiv.style.display = 'flex';
+        previewDiv.style.flexDirection = 'column';
+        previewDiv.style.alignItems = 'center';
+        previewDiv.style.marginTop = '10px';
+        uploadArea.appendChild(previewDiv);
+        function clearPreview() {
+          previewDiv.innerHTML = '';
+          fileInput.value = '';
+          uploadArea.querySelector('.upload-text').style.display = '';
+        }
+        function showPreview(file) {
+          previewDiv.innerHTML = '';
+          const cancelBtn = document.createElement('button');
+          cancelBtn.textContent = 'Cancel';
+          cancelBtn.type = 'button';
+          cancelBtn.style.marginTop = '8px';
+          cancelBtn.style.background = '#222';
+          cancelBtn.style.color = '#fff';
+          cancelBtn.style.border = 'none';
+          cancelBtn.style.borderRadius = '6px';
+          cancelBtn.style.padding = '6px 16px';
+          cancelBtn.style.cursor = 'pointer';
+          cancelBtn.onclick = clearPreview;
+          if (file.type.startsWith('image/')) {
+            const img = document.createElement('img');
+            img.style.maxWidth = '120px';
+            img.style.maxHeight = '80px';
+            img.style.borderRadius = '8px';
+            img.style.marginBottom = '6px';
+            img.alt = file.name;
+            const reader = new FileReader();
+            reader.onload = e => { img.src = e.target.result; };
+            reader.readAsDataURL(file);
+            previewDiv.appendChild(img);
+          } else {
+            const nameDiv = document.createElement('div');
+            nameDiv.textContent = file.name;
+            nameDiv.style.color = '#ccc';
+            nameDiv.style.fontSize = '0.98rem';
+            nameDiv.style.marginBottom = '6px';
+            previewDiv.appendChild(nameDiv);
+          }
+          previewDiv.appendChild(cancelBtn);
+          uploadArea.querySelector('.upload-text').style.display = 'none';
+        }
+        fileInput.addEventListener('change', (e) => {
+          if (fileInput.files && fileInput.files[0]) {
+            showPreview(fileInput.files[0]);
+          } else {
+            clearPreview();
+          }
+        });
+        uploadArea.addEventListener('click', (e) => {
+          // Only trigger file dialog if not clicking cancel
+          if (e.target === uploadArea || e.target.classList.contains('upload-icon') || e.target.classList.contains('upload-text')) {
+            fileInput.click();
+          }
+        });
+        uploadArea.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          uploadArea.classList.add('dragover');
+        });
+        uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+        uploadArea.addEventListener('drop', (e) => {
+          e.preventDefault();
+          uploadArea.classList.remove('dragover');
+          if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
+            fileInput.files = e.dataTransfer.files;
+            showPreview(fileInput.files[0]);
+          }
+        });
+      </script>
+    </body>
+    </html>
+  `;
+}
+
+// Serve the share page (GET)
+app.get('/', (req, res) => {
+  const { sid, msg, type, url } = req.query;
+  if (!sid) {
+    return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error' }));
+  }
+  res.send(renderSharePage({ sid, message: msg, messageType: type, urlValue: url }));
 });
 
-// Handle form submission
+// Handle form submission (POST)
 app.post('/', upload.single('image'), (req, res) => {
   const { sid, url } = req.body;
-  if (!sid) return res.status(400).send('Missing session ID (sid)');
+  if (!sid) {
+    return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', urlValue: url }));
+  }
 
   let shared = {};
   if (url && url.startsWith('http')) {
     shared.url = url;
   }
   if (req.file) {
+    // Store image as base64 (for demo, not for production)
     shared.image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
   }
-
   if (!shared.url && !shared.image) {
-    return res.status(400).send('Please provide a URL or upload an image.');
+    return res.status(400).send(renderSharePage({ sid, message: 'Please provide a valid URL or upload an image.', messageType: 'error', urlValue: url }));
   }
-
   sessions.set(sid, shared);
-  res.send('<h3>Shared successfully! You can close this page.</h3>');
+  // Show success message on same page
+  res.send(renderSharePage({ sid, message: 'Shared successfully! You can close this page.', messageType: 'success', urlValue: '' }));
 });
 
-// API to poll the data
+// API for extension to poll for shared data
 app.get('/poll', (req, res) => {
   const { sid } = req.query;
   if (!sid) return res.status(400).json({ error: 'Missing sid' });
-
   const shared = sessions.get(sid);
   if (!shared) return res.json({ status: 'waiting' });
-
-  sessions.delete(sid); // one-time use
+  // One-time use: clear after sending
+  sessions.delete(sid);
   res.json({ status: 'ready', shared });
 });
 
-// Start server if run directly
-if (require.main === module) {
-  const PORT = process.env.PORT || 3000;
-  app.listen(PORT, () => {
-    console.log(`ZapKey Share running at http://localhost:${PORT}`);
-  });
-}
-
-module.exports = app;
+module.exports = app; 
