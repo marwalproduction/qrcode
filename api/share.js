@@ -2,6 +2,7 @@ const express = require('express');
 const multer = require('multer');
 const path = require('path');
 const app = express();
+const QRCode = require('qrcode');
 
 // In-memory store for shared data (for demo, not persistent)
 const sessions = global._shareSessions = global._shareSessions || new Map();
@@ -338,8 +339,142 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
   `;
 }
 
+// Landing page with hero, about, and live QR code
+app.get('/', async (req, res) => {
+  // Generate a random session ID
+  const sid = Math.random().toString(36).slice(2);
+  // The QR code should point to the /share page for this session
+  const host = req.get('host');
+  const proto = req.protocol;
+  const shareUrl = `${proto}://${host}/share?sid=${sid}`;
+  const qrData = await QRCode.toDataURL(shareUrl);
+  res.send(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>ZapKey – Secure QR Login & Sharing</title>
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <style>
+        @font-face {
+          font-family: 'SF Pro Display';
+          src: url('https://fonts.cdnfonts.com/s/59163/SFProDisplay-Regular.woff') format('woff');
+          font-weight: 100 900;
+        }
+        html, body {
+          height: 100%;
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          min-height: 100vh;
+          height: 100vh;
+          box-sizing: border-box;
+          font-family: 'SF Pro Display', sans-serif;
+          background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+          display: flex;
+          flex-direction: column;
+        }
+        .main-hero {
+          flex: 1 0 auto;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          padding: 0 16px;
+        }
+        .hero-box {
+          background: rgba(30, 30, 30, 0.7);
+          border-radius: 22px;
+          box-shadow: 0 8px 32px rgba(0,0,0,0.22);
+          padding: 38px 24px 32px 24px;
+          max-width: 420px;
+          width: 100%;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .hero-title {
+          font-size: 2.5rem;
+          font-weight: 700;
+          background: linear-gradient(90deg, #0072ff, #002561);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          margin-bottom: 10px;
+        }
+        .hero-desc {
+          color: #e0e0e0;
+          font-size: 1.15rem;
+          margin-bottom: 18px;
+          text-align: center;
+        }
+        .qr-section {
+          margin: 18px 0 10px 0;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .qr-label {
+          color: #3b82f6;
+          font-size: 1.08rem;
+          margin-bottom: 8px;
+          font-weight: 500;
+        }
+        .qr-img {
+          background: #fff;
+          border-radius: 12px;
+          padding: 10px;
+          box-shadow: 0 2px 12px rgba(33,118,255,0.10);
+          width: 180px;
+          height: 180px;
+        }
+        .about-section {
+          margin-top: 24px;
+          color: #bbb;
+          font-size: 1.01rem;
+          text-align: center;
+        }
+        .footer {
+          width: 100vw;
+          text-align: center;
+          font-size: 1.08rem;
+          color: #3b82f6;
+          letter-spacing: 0.01em;
+          opacity: 0.95;
+          padding: 18px 0 12px 0;
+          background: transparent;
+          flex-shrink: 0;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="main-hero">
+        <div class="hero-box">
+          <div class="hero-title">ZapKey</div>
+          <div class="hero-desc">Share anything instantly. Secure QR login. Trusted by thousands.</div>
+          <div class="qr-section">
+            <div class="qr-label">Scan to share or login</div>
+            <img class="qr-img" src="${qrData}" alt="ZapKey QR Code" />
+          </div>
+          <div class="about-section">
+            <b>What is ZapKey?</b><br>
+            ZapKey lets you securely share links, images, and login credentials between devices using QR codes. No signup, no hassle—just scan and go.<br><br>
+            <b>How does it work?</b><br>
+            1. Open this page on your computer.<br>
+            2. Scan the QR code with your phone or ZapKey app.<br>
+            3. Instantly share or login securely.<br>
+          </div>
+        </div>
+      </div>
+      <div class="footer">
+        Successfully shared 20,000+ files
+      </div>
+    </body>
+    </html>
+  `);
+});
+
 // Serve the share page (GET)
-app.get('/', (req, res) => {
+app.get('/share', (req, res) => {
   const { sid, msg, type, url } = req.query;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error' }));
@@ -348,7 +483,7 @@ app.get('/', (req, res) => {
 });
 
 // Handle form submission (POST)
-app.post('/', upload.array('image'), (req, res) => {
+app.post('/share', upload.array('image'), (req, res) => {
   const { sid, url } = req.body;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', urlValue: url }));
