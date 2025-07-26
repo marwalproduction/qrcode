@@ -208,7 +208,7 @@ app.get('/', (req, res) => {
           <h2 style="margin-bottom: 0; font-size: 1.4rem; font-weight: 500; color: #111827; text-transform: none; text-align: left; width: 100%; line-height: 1.3;">Share everything with</h2>
           <h2 style="background: linear-gradient(90deg, #2563eb, #3b82f6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; text-fill-color: transparent; font-size: 3.5rem; font-weight: 700; letter-spacing: -0.01em; font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'San Francisco', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; text-transform: none; line-height: 1.1; text-align: left; width: 100%; margin-top: 0;">ZapKey</h2>
         </div>
-        <form id="share-form" style="width: 100%;">
+        <form id="share-form" method="POST" enctype="multipart/form-data" style="width: 100%;">
           <div class="input-row" style="width: 100%; display: flex; flex-direction: column; gap: 12px;">
             <input type="url" name="url" id="url-input" placeholder="Share a URL: https://example.com" style="width: 100%; box-sizing: border-box;">
             <span class="last-link-tab" id="last-link-tab" style="display:none;"></span>
