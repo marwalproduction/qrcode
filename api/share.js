@@ -25,15 +25,25 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           src: url('https://fonts.cdnfonts.com/s/59163/SFProDisplay-Regular.woff') format('woff');
           font-weight: 100 900;
         }
-        body {
-          font-family: 'SF Pro Display', sans-serif;
+        html, body {
+          height: 100%;
           margin: 0;
           padding: 0;
+        }
+        body {
+          min-height: 100vh;
+          height: 100vh;
+          box-sizing: border-box;
+          font-family: 'SF Pro Display', sans-serif;
           background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+          display: flex;
+          flex-direction: column;
+        }
+        .main-content {
+          flex: 1 0 auto;
           display: flex;
           justify-content: center;
           align-items: center;
-          height: -webkit-fill-available;
         }
         .container {
           width: 95%;
@@ -193,52 +203,48 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           margin-top: 12px;
         }
         .footer {
-          width: 100%;
+          width: 100vw;
           text-align: center;
-          font-size: 0.98rem;
-          color: #888;
-          margin-top: 22px;
-          letter-spacing: 0.01em;
-          opacity: 0.85;
-        }
-        .footer .files-shared-static {
-          color: #3b82f6;
           font-size: 1.08rem;
-          font-weight: 500;
-          margin-bottom: 2px;
-          display: block;
+          color: #3b82f6;
+          letter-spacing: 0.01em;
+          opacity: 0.95;
+          padding: 18px 0 12px 0;
+          background: transparent;
+          flex-shrink: 0;
         }
       </style>
     </head>
     <body>
-      <div class="container">
-        <h2 class="intro-text">Share everything with</h2>
-        <h2 class="brand-text">ZapKey</h2>
-        ${message ? `<div class="msg ${messageType}">${message}</div>` : ''}
-        <form method="POST" enctype="multipart/form-data" id="shareForm">
-          <input type="hidden" name="sid" value="${sid}" />
-          <input type="url" name="url" placeholder="Share a URL: https://example.com" id="urlInput" value="${urlValue ? urlValue.replace(/"/g, '&quot;') : ''}" />
-          <button type="button" id="paste-btn">Paste Last Copied</button>
-          <label class="upload-area" id="uploadArea">
-            <div class="upload-icon">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40">
-                <path fill="currentColor" d="M12 16a1 1 0 01-1-1V8.41l-2.3 2.3a1 1 0 01-1.4-1.42l4-4a1 1 0 011.4 0l4 4a1 1 0 01-1.4 1.42L13 8.41V15a1 1 0 01-1 1z" />
-                <path fill="currentColor" d="M5 18a1 1 0 100 2h14a1 1 0 100-2H5z"/>
-              </svg>
-            </div>
-            <div class="upload-text">
-              Click to upload file<br>
-              <small>(PDF, JPG, PNG, JPEG, WEBP, GIF, up to 10MB)</small>
-            </div>
-            <input type="file" name="image" class="file-input" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" id="fileInput" multiple />
-            <div class="preview-list" id="previewList"></div>
-          </label>
-          <button type="submit" class="share-btn">Share</button>
-        </form>
-        <div class="footer">
-          <span class="files-shared-static">Successfully shared 20,000+ files and many more, with love.</span>
-          Made with ❤️. Do it with love.
+      <div class="main-content">
+        <div class="container">
+          <h2 class="intro-text">Share everything with</h2>
+          <h2 class="brand-text">ZapKey</h2>
+          ${message ? `<div class="msg ${messageType}">${message}</div>` : ''}
+          <form method="POST" enctype="multipart/form-data" id="shareForm">
+            <input type="hidden" name="sid" value="${sid}" />
+            <input type="url" name="url" placeholder="Share a URL: https://example.com" id="urlInput" value="${urlValue ? urlValue.replace(/"/g, '&quot;') : ''}" />
+            <button type="button" id="paste-btn">Paste Last Copied</button>
+            <label class="upload-area" id="uploadArea">
+              <div class="upload-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="40" height="40">
+                  <path fill="currentColor" d="M12 16a1 1 0 01-1-1V8.41l-2.3 2.3a1 1 0 01-1.4-1.42l4-4a1 1 0 011.4 0l4 4a1 1 0 01-1.4 1.42L13 8.41V15a1 1 0 01-1 1z" />
+                  <path fill="currentColor" d="M5 18a1 1 0 100 2h14a1 1 0 100-2H5z"/>
+                </svg>
+              </div>
+              <div class="upload-text">
+                Click to upload file<br>
+                <small>(PDF, JPG, PNG, JPEG, WEBP, GIF, up to 10MB)</small>
+              </div>
+              <input type="file" name="image" class="file-input" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" id="fileInput" multiple />
+              <div class="preview-list" id="previewList"></div>
+            </label>
+            <button type="submit" class="share-btn">Share</button>
+          </form>
         </div>
+      </div>
+      <div class="footer">
+        Successfully shared 20,000+ files
       </div>
       <script>
         // Paste Last Copied
