@@ -58,7 +58,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           -webkit-text-fill-color: transparent;
         }
         .msg {
-          width: -webkit-fill-available;
+          width: 100%;
           margin-bottom: 18px;
           padding: 12px 16px;
           border-radius: 10px;
@@ -103,15 +103,17 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
         }
         .upload-area {
           width: 100%;
-          height: 160px;
+          min-height: 160px;
           border: 2px dashed #3b82f6;
           border-radius: 14px;
           background: rgba(255, 255, 255, 0.04);
           display: flex;
           flex-direction: column;
-          justify-content: center;
+          justify-content: flex-start;
           align-items: center;
           margin-bottom: 16px;
+          transition: min-height 0.2s;
+          padding-bottom: 10px;
         }
         .upload-area.dragover {
           border-color: #0072ff;
@@ -132,6 +134,48 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
         }
         .file-input {
           display: none;
+        }
+        .preview-list {
+          width: 100%;
+          display: flex;
+          flex-wrap: wrap;
+          gap: 10px;
+          margin-top: 10px;
+          justify-content: flex-start;
+        }
+        .preview-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          background: rgba(40,40,40,0.7);
+          border-radius: 8px;
+          padding: 8px 8px 4px 8px;
+          position: relative;
+          min-width: 90px;
+          max-width: 120px;
+        }
+        .preview-item img {
+          max-width: 90px;
+          max-height: 70px;
+          border-radius: 6px;
+          margin-bottom: 4px;
+        }
+        .preview-item .file-name {
+          color: #ccc;
+          font-size: 0.93rem;
+          margin-bottom: 2px;
+          word-break: break-all;
+          text-align: center;
+        }
+        .preview-item .remove-btn {
+          background: #222;
+          color: #fff;
+          border: none;
+          border-radius: 6px;
+          padding: 3px 10px;
+          cursor: pointer;
+          font-size: 0.9rem;
+          margin-top: 2px;
         }
         .share-btn {
           width: 100%;
@@ -167,7 +211,8 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
               Click to upload file<br>
               <small>(PDF, JPG, PNG, JPEG, WEBP, GIF, up to 10MB)</small>
             </div>
-            <input type="file" name="image" class="file-input" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" id="fileInput" />
+            <input type="file" name="image" class="file-input" accept="image/jpeg,image/png,image/webp,image/gif,application/pdf" id="fileInput" multiple />
+            <div class="preview-list" id="previewList"></div>
           </label>
           <button type="submit" class="share-btn">Share</button>
         </form>
@@ -187,66 +232,56 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
             alert('Clipboard API not supported.');
           }
         };
-        // Drag and drop/click upload
+        // Drag and drop/click upload, multiple files
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
-        // Add preview/cancel elements
-        const previewDiv = document.createElement('div');
-        previewDiv.style.width = '100%';
-        previewDiv.style.display = 'flex';
-        previewDiv.style.flexDirection = 'column';
-        previewDiv.style.alignItems = 'center';
-        previewDiv.style.marginTop = '10px';
-        uploadArea.appendChild(previewDiv);
-        function clearPreview() {
-          previewDiv.innerHTML = '';
-          fileInput.value = '';
-          uploadArea.querySelector('.upload-text').style.display = '';
-        }
-        function showPreview(file) {
-          previewDiv.innerHTML = '';
-          const cancelBtn = document.createElement('button');
-          cancelBtn.textContent = 'Cancel';
-          cancelBtn.type = 'button';
-          cancelBtn.style.marginTop = '8px';
-          cancelBtn.style.background = '#222';
-          cancelBtn.style.color = '#fff';
-          cancelBtn.style.border = 'none';
-          cancelBtn.style.borderRadius = '6px';
-          cancelBtn.style.padding = '6px 16px';
-          cancelBtn.style.cursor = 'pointer';
-          cancelBtn.onclick = clearPreview;
-          if (file.type.startsWith('image/')) {
-            const img = document.createElement('img');
-            img.style.maxWidth = '120px';
-            img.style.maxHeight = '80px';
-            img.style.borderRadius = '8px';
-            img.style.marginBottom = '6px';
-            img.alt = file.name;
-            const reader = new FileReader();
-            reader.onload = e => { img.src = e.target.result; };
-            reader.readAsDataURL(file);
-            previewDiv.appendChild(img);
+        const previewList = document.getElementById('previewList');
+        let filesArr = [];
+        function updatePreviews() {
+          previewList.innerHTML = '';
+          if (filesArr.length === 0) {
+            uploadArea.querySelector('.upload-text').style.display = '';
+            uploadArea.style.minHeight = '160px';
           } else {
-            const nameDiv = document.createElement('div');
-            nameDiv.textContent = file.name;
-            nameDiv.style.color = '#ccc';
-            nameDiv.style.fontSize = '0.98rem';
-            nameDiv.style.marginBottom = '6px';
-            previewDiv.appendChild(nameDiv);
+            uploadArea.querySelector('.upload-text').style.display = 'none';
+            uploadArea.style.minHeight = '';
           }
-          previewDiv.appendChild(cancelBtn);
-          uploadArea.querySelector('.upload-text').style.display = 'none';
+          filesArr.forEach((file, idx) => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            if (file.type && file.type.startsWith('image/')) {
+              const img = document.createElement('img');
+              const reader = new FileReader();
+              reader.onload = e => { img.src = e.target.result; };
+              reader.readAsDataURL(file);
+              img.alt = file.name;
+              item.appendChild(img);
+            }
+            const nameDiv = document.createElement('div');
+            nameDiv.className = 'file-name';
+            nameDiv.textContent = file.name;
+            item.appendChild(nameDiv);
+            const removeBtn = document.createElement('button');
+            removeBtn.className = 'remove-btn';
+            removeBtn.type = 'button';
+            removeBtn.textContent = 'Remove';
+            removeBtn.onclick = () => {
+              filesArr.splice(idx, 1);
+              updatePreviews();
+              // Update file input
+              const dt = new DataTransfer();
+              filesArr.forEach(f => dt.items.add(f));
+              fileInput.files = dt.files;
+            };
+            item.appendChild(removeBtn);
+            previewList.appendChild(item);
+          });
         }
         fileInput.addEventListener('change', (e) => {
-          if (fileInput.files && fileInput.files[0]) {
-            showPreview(fileInput.files[0]);
-          } else {
-            clearPreview();
-          }
+          filesArr = Array.from(fileInput.files);
+          updatePreviews();
         });
         uploadArea.addEventListener('click', (e) => {
-          // Only trigger file dialog if not clicking cancel
           if (e.target === uploadArea || e.target.classList.contains('upload-icon') || e.target.classList.contains('upload-text')) {
             fileInput.click();
           }
@@ -260,8 +295,12 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           e.preventDefault();
           uploadArea.classList.remove('dragover');
           if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            fileInput.files = e.dataTransfer.files;
-            showPreview(fileInput.files[0]);
+            filesArr = Array.from(e.dataTransfer.files);
+            updatePreviews();
+            // Update file input
+            const dt = new DataTransfer();
+            filesArr.forEach(f => dt.items.add(f));
+            fileInput.files = dt.files;
           }
         });
       </script>
@@ -280,21 +319,20 @@ app.get('/', (req, res) => {
 });
 
 // Handle form submission (POST)
-app.post('/', upload.single('image'), (req, res) => {
+app.post('/', upload.array('image'), (req, res) => {
   const { sid, url } = req.body;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', urlValue: url }));
   }
-
   let shared = {};
   if (url && url.startsWith('http')) {
     shared.url = url;
   }
-  if (req.file) {
-    // Store image as base64 (for demo, not for production)
-    shared.image = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+  if (req.files && req.files.length > 0) {
+    // Store images as base64 (for demo, not for production)
+    shared.images = req.files.map(f => `data:${f.mimetype};base64,${f.buffer.toString('base64')}`);
   }
-  if (!shared.url && !shared.image) {
+  if (!shared.url && (!shared.images || shared.images.length === 0)) {
     return res.status(400).send(renderSharePage({ sid, message: 'Please provide a valid URL or upload an image.', messageType: 'error', urlValue: url }));
   }
   sessions.set(sid, shared);
