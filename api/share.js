@@ -551,7 +551,7 @@ router.get('/', async (req, res) => {
           }
         }
         function pollShared() {
-          fetch(`/share/poll?sid=` + "${sid}" + ``)
+          fetch('/share/poll?sid=' + "${sid}")
             .then(res => res.json())
             .then(data => {
               if (data.status === 'ready') {
