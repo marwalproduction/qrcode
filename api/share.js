@@ -433,16 +433,54 @@ router.get('/', async (req, res) => {
           font-size: 1.01rem;
           text-align: center;
         }
-        .footer {
-          width: 100vw;
-          text-align: center;
-          font-size: 1.08rem;
+        .shared-section {
+          margin-top: 24px;
+          width: 100%;
+          background: rgba(20, 20, 30, 0.7);
+          border-radius: 14px;
+          padding: 18px 10px 10px 10px;
+          box-shadow: 0 2px 12px rgba(33,118,255,0.05);
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        .shared-title {
           color: #3b82f6;
-          letter-spacing: 0.01em;
-          opacity: 0.95;
-          padding: 18px 0 12px 0;
-          background: transparent;
-          flex-shrink: 0;
+          font-size: 1.08rem;
+          font-weight: 600;
+          margin-bottom: 10px;
+        }
+        .shared-link {
+          font-size: 1.1rem;
+          color: #007bff;
+          word-break: break-all;
+          margin-bottom: 16px;
+        }
+        .shared-img {
+          max-width: 160px;
+          max-height: 160px;
+          border-radius: 8px;
+          margin-bottom: 12px;
+          display: block;
+        }
+        .waiting-msg {
+          color: #888;
+          font-size: 1.05rem;
+          margin-bottom: 0;
+        }
+        @media (max-width: 600px) {
+          .hero-box {
+            padding: 18px 4vw 18px 4vw;
+            max-width: 99vw;
+          }
+          .main-hero {
+            padding: 0 2vw;
+          }
+          .qr-img {
+            width: 120px;
+            height: 120px;
+            padding: 6px;
+          }
         }
       </style>
     </head>
@@ -463,11 +501,71 @@ router.get('/', async (req, res) => {
             2. Scan the QR code with your phone or ZapKey app.<br>
             3. Instantly share or login securely.<br>
           </div>
+          <div class="shared-section" id="sharedSection">
+            <div class="shared-title">Shared Data</div>
+            <div class="waiting-msg" id="waitingMsg">Waiting for data...</div>
+            <div id="sharedContent"></div>
+          </div>
         </div>
       </div>
       <div class="footer">
         Successfully shared 20,000+ files
       </div>
+      <script>
+        // Poll for shared data for this session
+        const sid = "${sid}";
+        const sharedContent = document.getElementById('sharedContent');
+        const waitingMsg = document.getElementById('waitingMsg');
+        function showSharedData(shared) {
+          sharedContent.innerHTML = '';
+          let hasData = false;
+          if (shared.url) {
+            const link = document.createElement('a');
+            link.href = shared.url;
+            link.textContent = shared.url;
+            link.target = '_blank';
+            link.className = 'shared-link';
+            sharedContent.appendChild(link);
+            hasData = true;
+          }
+          if (shared.images && Array.isArray(shared.images) && shared.images.length > 0) {
+            shared.images.forEach((imgSrc, idx) => {
+              const img = document.createElement('img');
+              img.src = imgSrc;
+              img.alt = 'Shared Image ' + (idx + 1);
+              img.className = 'shared-img';
+              sharedContent.appendChild(img);
+            });
+            hasData = true;
+          }
+          if (shared.image && (!shared.images || shared.images.length === 0)) {
+            const img = document.createElement('img');
+            img.src = shared.image;
+            img.alt = 'Shared Image';
+            img.className = 'shared-img';
+            sharedContent.appendChild(img);
+            hasData = true;
+          }
+          if (!hasData) {
+            sharedContent.textContent = 'No data shared.';
+          }
+        }
+        function pollShared() {
+          fetch(`/share/poll?sid=${sid}`)
+            .then(res => res.json())
+            .then(data => {
+              if (data.status === 'ready') {
+                waitingMsg.style.display = 'none';
+                showSharedData(data.shared);
+              } else {
+                waitingMsg.style.display = '';
+                setTimeout(pollShared, 2000);
+              }
+            })
+            .catch(() => setTimeout(pollShared, 2000));
+        }
+        pollShared();
+      </script>
     </body>
     </html>
   `);
