@@ -24,7 +24,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
         @font-face {
           font-family: 'SF Pro Display';
           src: url('https://fonts.cdnfonts.com/s/59163/SFProDisplay-Regular.woff') format('woff');
-          font-weight: 100 900;
+          font-weight: 400;
         }
         html, body {
           height: 100%;
@@ -358,7 +358,7 @@ router.get('/', async (req, res) => {
         @font-face {
           font-family: 'SF Pro Display';
           src: url('https://fonts.cdnfonts.com/s/59163/SFProDisplay-Regular.woff') format('woff');
-          font-weight: 100 900;
+          font-weight: 400;
         }
         html, body {
           height: 100%;
