@@ -33,7 +33,7 @@ function renderSharePage({ sid, message, messageType, urlValue, filesShared }) {
           display: flex;
           justify-content: center;
           align-items: center;
-          height: 100vh;
+          height: -webkit-fill-available;
         }
         .container {
           width: 95%;
@@ -70,7 +70,7 @@ function renderSharePage({ sid, message, messageType, urlValue, filesShared }) {
           letter-spacing: 0.01em;
         }
         .msg {
-          width: 100%;
+          width: -webkit-fill-available;
           margin-bottom: 18px;
           padding: 12px 16px;
           border-radius: 10px;
