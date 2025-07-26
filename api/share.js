@@ -59,6 +59,7 @@ app.get('/', (req, res) => {
           <div class="input-row">
             <input type="url" name="url" id="url-input" placeholder="https://example.com" autocomplete="off" />
             <span class="last-link-tab" id="last-link-tab" style="display:none;"></span>
+            <button type="button" id="paste-btn" style="margin-left:8px;padding:6px 12px;font-size:0.98rem;border-radius:7px;border:1.5px solid #2563eb22;background:#e0e7ff;color:#2563eb;font-weight:600;cursor:pointer;">Paste</button>
           </div>
           <label>Or upload a file:</label>
           <div class="upload-area" id="upload-area">
@@ -143,6 +144,19 @@ app.get('/', (req, res) => {
         document.getElementById('share-form').onsubmit = function() {
           shareBtn.disabled = true;
           shareBtn.style.opacity = 0.7;
+        };
+        // Paste from clipboard button fallback
+        document.getElementById('paste-btn').onclick = async function() {
+          if (navigator.clipboard) {
+            try {
+              const text = await navigator.clipboard.readText();
+              if (text) document.getElementById('url-input').value = text;
+            } catch (e) {
+              alert('Clipboard access denied.');
+            }
+          } else {
+            alert('Clipboard API not supported.');
+          }
         };
       </script>
     </body></html>
