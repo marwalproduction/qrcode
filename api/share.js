@@ -226,7 +226,7 @@ app.get('/', (req, res) => {
               Click or drag file here<br>
               <span style="font-size: 0.8rem;">(PDF, JPG, PNG, JPEG, WEBP, GIF, up to 10MB)</span>
             </span>
-            <input type="file" name="file" id="file-input" accept=".pdf,image/jpeg,image/png,image/webp,image/gif" style="display:none;" />
+            <input type="file" name="file" id="file-input" accept=".pdf,image/jpeg,image/png,image/webp,image/gif" />
             <div class="file-info" id="file-info"></div>
           </div>
           <button type="submit" class="share-btn" id="share-btn">
@@ -235,6 +235,7 @@ app.get('/', (req, res) => {
           </button>
         </form>
       </div>
+      <div id="error-message" style="color:#e11d48; font-size:1rem; margin-bottom:10px;"></div>
       <script>
         // Show last copied link if available
         document.addEventListener('DOMContentLoaded', () => {
@@ -292,11 +293,13 @@ app.get('/', (req, res) => {
           const file = fileInput.files[0];
           if (!file) return;
           if (file.size > 10 * 1024 * 1024) {
-            fileInfo.innerHTML = '<span style="color:#e11d48">File too large (max 10MB)</span>';
+            fileInfo.innerHTML = '';
+            document.getElementById('error-message').textContent = 'File too large (max 10MB)';
             fileInput.value = '';
             selectedFile = null;
             return;
           }
+          document.getElementById('error-message').textContent = '';
           fileInfo.innerHTML = file.name + ' (' + (file.size/1024/1024).toFixed(2) + ' MB)' +
             ' <span class="file-remove" id="remove-file">Remove</span>';
           selectedFile = file;
