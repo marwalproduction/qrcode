@@ -12,7 +12,7 @@ const totalFilesShared = global._totalFilesShared = global._totalFilesShared || 
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } }); // 2MB limit
 
-function renderSharePage({ sid, message, messageType, urlValue, filesShared }) {
+function renderSharePage({ sid, message, messageType, urlValue }) {
   return `
     <!DOCTYPE html>
     <html>
@@ -59,15 +59,6 @@ function renderSharePage({ sid, message, messageType, urlValue, filesShared }) {
           background: linear-gradient(90deg, #0072ff, #002561);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
-        }
-        .files-shared {
-          width: 100%;
-          text-align: center;
-          font-size: 1.08rem;
-          color: #3b82f6;
-          margin-bottom: 10px;
-          font-weight: 500;
-          letter-spacing: 0.01em;
         }
         .msg {
           width: -webkit-fill-available;
@@ -210,13 +201,19 @@ function renderSharePage({ sid, message, messageType, urlValue, filesShared }) {
           letter-spacing: 0.01em;
           opacity: 0.85;
         }
+        .footer .files-shared-static {
+          color: #3b82f6;
+          font-size: 1.08rem;
+          font-weight: 500;
+          margin-bottom: 2px;
+          display: block;
+        }
       </style>
     </head>
     <body>
       <div class="container">
         <h2 class="intro-text">Share everything with</h2>
         <h2 class="brand-text">ZapKey</h2>
-        <div class="files-shared">${filesShared.toLocaleString()} files shared</div>
         ${message ? `<div class="msg ${messageType}">${message}</div>` : ''}
         <form method="POST" enctype="multipart/form-data" id="shareForm">
           <input type="hidden" name="sid" value="${sid}" />
@@ -238,7 +235,10 @@ function renderSharePage({ sid, message, messageType, urlValue, filesShared }) {
           </label>
           <button type="submit" class="share-btn">Share</button>
         </form>
-        <div class="footer">Made with ❤️. Do it with love.</div>
+        <div class="footer">
+          <span class="files-shared-static">Successfully shared 20,000+ files and many more, with love.</span>
+          Made with ❤️. Do it with love.
+        </div>
       </div>
       <script>
         // Paste Last Copied
@@ -336,16 +336,16 @@ function renderSharePage({ sid, message, messageType, urlValue, filesShared }) {
 app.get('/', (req, res) => {
   const { sid, msg, type, url } = req.query;
   if (!sid) {
-    return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', filesShared: totalFilesShared.count }));
+    return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error' }));
   }
-  res.send(renderSharePage({ sid, message: msg, messageType: type, urlValue: url, filesShared: totalFilesShared.count }));
+  res.send(renderSharePage({ sid, message: msg, messageType: type, urlValue: url }));
 });
 
 // Handle form submission (POST)
 app.post('/', upload.array('image'), (req, res) => {
   const { sid, url } = req.body;
   if (!sid) {
-    return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', urlValue: url, filesShared: totalFilesShared.count }));
+    return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', urlValue: url }));
   }
   let shared = {};
   if (url && url.startsWith('http')) {
@@ -357,11 +357,11 @@ app.post('/', upload.array('image'), (req, res) => {
     totalFilesShared.count += req.files.length;
   }
   if (!shared.url && (!shared.images || shared.images.length === 0)) {
-    return res.status(400).send(renderSharePage({ sid, message: 'Please provide a valid URL or upload an image.', messageType: 'error', urlValue: url, filesShared: totalFilesShared.count }));
+    return res.status(400).send(renderSharePage({ sid, message: 'Please provide a valid URL or upload an image.', messageType: 'error', urlValue: url }));
   }
   sessions.set(sid, shared);
   // Show success message on same page
-  res.send(renderSharePage({ sid, message: 'Shared successfully! You can close this page.', messageType: 'success', urlValue: '', filesShared: totalFilesShared.count }));
+  res.send(renderSharePage({ sid, message: 'Shared successfully! You can close this page.', messageType: 'success', urlValue: '' }));
 });
 
 // API for extension to poll for shared data
