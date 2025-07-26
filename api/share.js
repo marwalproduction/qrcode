@@ -58,7 +58,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           -webkit-text-fill-color: transparent;
         }
         .msg {
-          width: 100%;
+          width: -webkit-fill-available;
           margin-bottom: 18px;
           padding: 12px 16px;
           border-radius: 10px;
