@@ -125,7 +125,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           -webkit-text-fill-color: transparent;
         }
         .msg {
-          width: 100%;
+          width: -webkit-fill-available;
           margin-bottom: 18px;
           padding: 12px 16px;
           border-radius: 10px;
@@ -144,7 +144,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           border: 1px solid #00e07a;
         }
         input[type="url"] {
-          width: 100%;
+          width: -webkit-fill-available;
           padding: 12px 16px;
           font-size: 1rem;
           border: 1px solid #444;
