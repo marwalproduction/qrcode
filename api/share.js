@@ -79,6 +79,31 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           display: flex;
           justify-content: center;
           align-items: center;
+          flex-direction: column;
+        }
+        .hero-section {
+          width: 100vw;
+          max-width: 460px;
+          margin: 0 auto 18px auto;
+          padding: 0 18px;
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+        }
+        .hero-headline {
+          font-size: 2.1rem;
+          font-weight: 700;
+          margin-bottom: 10px;
+          background: linear-gradient(90deg, #00ffe7, #00ff85);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .hero-subheadline {
+          color: #b0b6be;
+          font-size: 1.04rem;
+          margin-bottom: 28px;
+          font-weight: 400;
         }
         .container {
           width: 95vw;
@@ -137,11 +162,17 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           padding: 12px;
           font-size: 1rem;
           border-radius: 10px;
-          background: rgba(59, 130, 246, 0.2);
-          color: #3b82f6;
-          border: 1px solid #3b82f6;
+          background: linear-gradient(90deg, #00ffe7, #00ff85);
+          color: #101114;
+          border: none;
+          font-weight: 600;
+          box-shadow: 0 2px 12px rgba(0,255,180,0.08);
           margin-bottom: 16px;
           cursor: pointer;
+          transition: background 0.2s;
+        }
+        #paste-btn:hover {
+          background: linear-gradient(90deg, #00ff85, #00ffe7);
         }
         .upload-area {
           width: 100%;
@@ -240,7 +271,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           width: 100vw;
           text-align: center;
           font-size: 1.08rem;
-          color: #00ff85;
+          color: #7a7f87;
           letter-spacing: 0.01em;
           opacity: 0.95;
           padding: 18px 0 12px 0;
@@ -251,8 +282,12 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
     </head>
     <body>
       <div class="main-content">
+        <div class="hero-section">
+          <div class="brand-text">ZapKey</div>
+          <div class="hero-headline">Share Instantly. No Signups. No Hassle.</div>
+          <div class="hero-subheadline">Securely share files and links across devices with a simple QR scan.</div>
+        </div>
         <div class="container">
-          <h2 class="brand-text">ZapKey</h2>
           ${message ? `<div class="msg ${messageType}">${message}</div>` : ''}
           <form method="POST" enctype="multipart/form-data" id="shareForm">
             <input type="hidden" name="sid" value="${sid}" />
@@ -277,7 +312,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
         </div>
       </div>
       <div class="footer">
-        Successfully shared 20,000+ files
+        Built for privacy. Designed for speed.
       </div>
       <script>
         // Paste Last Copied
