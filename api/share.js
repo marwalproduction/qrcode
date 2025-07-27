@@ -162,17 +162,17 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           padding: 12px;
           font-size: 1rem;
           border-radius: 10px;
-          background: linear-gradient(90deg, #00ffe7, #00ff85);
-          color: #101114;
-          border: none;
+          background: rgba(0,255,180,0.07);
+          color: #00ff85;
+          border: 1.5px solid #00ff85;
           font-weight: 600;
-          box-shadow: 0 2px 12px rgba(0,255,180,0.08);
           margin-bottom: 16px;
           cursor: pointer;
-          transition: background 0.2s;
+          transition: background 0.2s, border 0.2s;
         }
         #paste-btn:hover {
-          background: linear-gradient(90deg, #00ff85, #00ffe7);
+          background: rgba(0,255,180,0.18);
+          border-color: #00ffe7;
         }
         .upload-area {
           width: 100%;
