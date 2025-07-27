@@ -355,11 +355,7 @@ router.get('/', async (req, res) => {
       <title>ZapKey – Secure QR Login & Sharing</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
-        @font-face {
-          font-family: 'SF Pro Display';
-          src: url('https://fonts.cdnfonts.com/s/59163/SFProDisplay-Regular.woff') format('woff');
-          font-weight: 400;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         html, body {
           height: 100%;
           margin: 0;
@@ -369,172 +365,229 @@ router.get('/', async (req, res) => {
           min-height: 100vh;
           height: 100vh;
           box-sizing: border-box;
-          font-family: 'SF Pro Display', sans-serif;
-          background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+          font-family: 'Inter', 'SF Pro Display', sans-serif;
+          background: #101114;
+          color: #fff;
           display: flex;
           flex-direction: column;
-        }
-        .main-hero {
-          flex: 1 0 auto;
-          display: flex;
-          flex-direction: column;
+          justify-content: flex-start;
           align-items: center;
-          justify-content: center;
-          padding: 0 16px;
         }
-        .hero-box {
-          background: rgba(30, 30, 30, 0.7);
-          border-radius: 22px;
-          box-shadow: 0 8px 32px rgba(0,0,0,0.22);
-          padding: 38px 24px 32px 24px;
+        .container {
+          width: 100vw;
           max-width: 420px;
-          width: 100%;
+          margin: 0 auto;
+          padding: 0 18px;
           display: flex;
           flex-direction: column;
-          align-items: center;
+          align-items: flex-start;
         }
-        .hero-title {
-          font-size: 2.5rem;
+        .brand {
+          font-size: 1.1rem;
+          font-weight: 600;
+          margin-top: 32px;
+          margin-bottom: 18px;
+          letter-spacing: 0.01em;
+        }
+        .headline {
+          font-size: 2.1rem;
           font-weight: 700;
-          background: linear-gradient(90deg, #0072ff, #002561);
+          margin-bottom: 10px;
+          background: linear-gradient(90deg, #00ffe7, #00ff85);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
+          background-clip: text;
+        }
+        .subheadline {
+          color: #b0b6be;
+          font-size: 1.04rem;
+          margin-bottom: 28px;
+          font-weight: 400;
+        }
+        .features {
+          margin-bottom: 32px;
+        }
+        .feature {
+          display: flex;
+          align-items: center;
+          font-size: 1.05rem;
+          color: #e0f7ef;
           margin-bottom: 10px;
         }
-        .hero-desc {
-          color: #e0e0e0;
-          font-size: 1.15rem;
-          margin-bottom: 18px;
-          text-align: center;
+        .feature svg {
+          margin-right: 12px;
+          width: 22px;
+          height: 22px;
+          flex-shrink: 0;
         }
-        .qr-section {
-          margin: 18px 0 10px 0;
+        .qr-card {
+          width: 100%;
+          background: rgba(24, 26, 32, 0.92);
+          border-radius: 16px;
+          box-shadow: 0 2px 16px rgba(0,255,180,0.04);
+          padding: 22px 0 18px 0;
+          margin-bottom: 28px;
           display: flex;
           flex-direction: column;
           align-items: center;
+          border: 1px solid #23272f;
         }
-        .qr-label {
-          color: #3b82f6;
-          font-size: 1.08rem;
-          margin-bottom: 8px;
-          font-weight: 500;
+        .qr-title {
+          color: #e0f7ef;
+          font-size: 1.13rem;
+          font-weight: 600;
+          margin-bottom: 16px;
         }
         .qr-img {
           background: #fff;
           border-radius: 12px;
           padding: 10px;
-          box-shadow: 0 2px 12px rgba(33,118,255,0.10);
-          width: 180px;
-          height: 180px;
+          width: 160px;
+          height: 160px;
+          margin-bottom: 18px;
         }
-        .about-section {
-          margin-top: 24px;
-          color: #bbb;
-          font-size: 1.01rem;
-          text-align: center;
-        }
-        .shared-section {
-          margin-top: 24px;
-          width: 100%;
-          background: rgba(20, 20, 30, 0.7);
-          border-radius: 14px;
-          padding: 18px 10px 10px 10px;
-          box-shadow: 0 2px 12px rgba(33,118,255,0.05);
+        .qr-stats {
           display: flex;
-          flex-direction: column;
           align-items: center;
+          color: #00ff85;
+          font-size: 1.04rem;
+          font-weight: 500;
+          margin-bottom: 2px;
         }
-        .shared-title {
-          color: #3b82f6;
-          font-size: 1.08rem;
-          font-weight: 600;
-          margin-bottom: 10px;
+        .qr-stats svg {
+          margin-right: 7px;
+          width: 18px;
+          height: 18px;
         }
-        .shared-link {
-          font-size: 1.1rem;
-          color: #007bff;
-          word-break: break-all;
-          margin-bottom: 16px;
-        }
-        .shared-img {
-          max-width: 160px;
-          max-height: 160px;
-          border-radius: 8px;
-          margin-bottom: 12px;
-          display: block;
-        }
-        .waiting-msg {
-          color: #888;
-          font-size: 1.05rem;
+        .qr-desc {
+          color: #7a7f87;
+          font-size: 0.98rem;
           margin-bottom: 0;
         }
+        .scan-btn {
+          width: 100%;
+          margin: 24px 0 0 0;
+          padding: 15px 0;
+          font-size: 1.13rem;
+          font-weight: 600;
+          border: none;
+          border-radius: 10px;
+          background: linear-gradient(90deg, #00ffe7, #00ff85);
+          color: #101114;
+          cursor: pointer;
+          box-shadow: 0 2px 12px rgba(0,255,180,0.08);
+          transition: background 0.2s;
+        }
+        .scan-btn:hover {
+          background: linear-gradient(90deg, #00ff85, #00ffe7);
+        }
+        .footer {
+          width: 100vw;
+          text-align: center;
+          font-size: 1.01rem;
+          color: #7a7f87;
+          letter-spacing: 0.01em;
+          opacity: 0.95;
+          padding: 32px 0 18px 0;
+          background: transparent;
+          flex-shrink: 0;
+        }
+        .footer-social {
+          margin-top: 10px;
+        }
+        .footer-social a {
+          color: #b0b6be;
+          margin: 0 8px;
+          text-decoration: none;
+          font-size: 1.3rem;
+          vertical-align: middle;
+        }
         @media (max-width: 600px) {
-          .hero-box {
-            padding: 18px 4vw 18px 4vw;
+          .container {
+            padding: 0 4vw;
             max-width: 99vw;
           }
-          .main-hero {
-            padding: 0 2vw;
-          }
           .qr-img {
-            width: 120px;
-            height: 120px;
+            width: 110px;
+            height: 110px;
             padding: 6px;
           }
         }
       </style>
     </head>
     <body>
-      <div class="main-hero">
-        <div class="hero-box">
-          <div class="hero-title">ZapKey</div>
-          <div class="hero-desc">Share anything instantly. Secure QR login. Trusted by thousands.</div>
-          <div class="qr-section">
-            <div class="qr-label">Scan to share or login</div>
-            <img class="qr-img" src="${qrData}" alt="ZapKey QR Code" />
+      <div class="container">
+        <div class="brand">ZapKey</div>
+        <div class="headline">Share Instantly. No Signups. No Hassle.</div>
+        <div class="subheadline">Securely share files and links across devices with a simple QR scan.</div>
+        <div class="features">
+          <div class="feature">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+            Instant File & Link Transfer
           </div>
-          <div class="about-section">
-            <b>What is ZapKey?</b><br>
-            ZapKey lets you securely share links, images, and login credentials between devices using QR codes. No signup, no hassle—just scan and go.<br><br>
-            <b>How does it work?</b><br>
-            1. Open this page on your computer.<br>
-            2. Scan the QR code with your phone or ZapKey app.<br>
-            3. Instantly share or login securely.<br>
+          <div class="feature">
+            <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+            No App or Signup Needed
           </div>
-          <div class="shared-section" id="sharedSection">
-            <div class="shared-title">Shared Data</div>
-            <div class="waiting-msg" id="waitingMsg">Waiting for data...</div>
-            <div id="sharedContent"></div>
+        </div>
+        <div class="qr-card">
+          <div class="qr-title">Scan QR to Share</div>
+          <img class="qr-img" src="${qrData}" alt="ZapKey QR Code" />
+          <div id="sharedDataSection">
+            <div class="qr-stats">
+              <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 00-1.414 0L9 12.586l-2.293-2.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>
+              20,000+ files shared securely
+            </div>
+            <div class="qr-desc">No account needed - just scan & go</div>
           </div>
         </div>
       </div>
       <div class="footer">
-        Successfully shared 20,000+ files
+        Built for privacy. Designed for speed.
+        <div class="footer-social">
+          <a href="#" title="GitHub" aria-label="GitHub"><svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.477 2 2 6.484 2 12.021c0 4.428 2.865 8.184 6.839 9.504.5.092.682-.217.682-.482 0-.237-.009-.868-.014-1.703-2.782.605-3.369-1.342-3.369-1.342-.454-1.154-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.004.07 1.532 1.032 1.532 1.032.892 1.53 2.341 1.088 2.91.832.091-.647.35-1.088.636-1.339-2.221-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.025A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.295 2.748-1.025 2.748-1.025.546 1.378.202 2.397.1 2.65.64.7 1.028 1.595 1.028 2.688 0 3.847-2.337 4.695-4.566 4.944.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.749 0 .267.18.578.688.48C19.138 20.2 22 16.447 22 12.021 22 6.484 17.523 2 12 2z"/></svg></a>
+          <a href="#" title="Twitter" aria-label="Twitter"><svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M22.46 5.924c-.793.352-1.645.59-2.54.698a4.48 4.48 0 001.963-2.475 8.94 8.94 0 01-2.828 1.082 4.48 4.48 0 00-7.635 4.086A12.72 12.72 0 013.11 4.86a4.48 4.48 0 001.39 5.976 4.48 4.48 0 01-2.03-.56v.057a4.48 4.48 0 003.6 4.393 4.48 4.48 0 01-2.025.077 4.48 4.48 0 004.18 3.11A8.98 8.98 0 012 19.54a12.7 12.7 0 006.88 2.02c8.26 0 12.78-6.84 12.78-12.78 0-.195-.004-.39-.013-.583A9.14 9.14 0 0024 4.59a8.94 8.94 0 01-2.54.698z"/></svg></a>
+          <a href="#" title="Discord" aria-label="Discord"><svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M20.317 4.369A19.791 19.791 0 0016.885 3.2a.117.117 0 00-.125.06c-.556.98-1.176 2.267-1.617 3.287a18.524 18.524 0 00-5.034 0c-.441-1.02-1.061-2.307-1.617-3.287a.117.117 0 00-.125-.06A19.736 19.736 0 003.683 4.369a.105.105 0 00-.047.043C.533 9.045-.32 13.579.099 18.057a.12.12 0 00.045.083c2.052 1.507 4.042 2.422 5.992 3.029a.117.117 0 00.128-.043c.461-.63.873-1.295 1.226-1.994a.112.112 0 00-.065-.158c-.652-.247-1.27-.549-1.872-.892a.117.117 0 01-.012-.194c.126-.094.252-.192.371-.291a.112.112 0 01.114-.01c3.927 1.793 8.18 1.793 12.061 0a.112.112 0 01.115.01c.12.099.245.197.371.291a.117.117 0 01-.011.194 12.298 12.298 0 01-1.873.892.112.112 0 00-.064.158c.36.699.772 1.364 1.226 1.994a.117.117 0 00.128.043c1.95-.607 3.94-1.522 5.992-3.029a.115.115 0 00.045-.083c.5-5.177-.838-9.673-3.573-13.645a.093.093 0 00-.047-.043zM8.02 15.331c-1.183 0-2.156-1.085-2.156-2.419 0-1.333.955-2.418 2.156-2.418 1.21 0 2.174 1.094 2.156 2.418 0 1.334-.955 2.419-2.156 2.419zm7.974 0c-1.183 0-2.156-1.085-2.156-2.419 0-1.333.955-2.418 2.156-2.418 1.21 0 2.174 1.094 2.156 2.418 0 1.334-.946 2.419-2.156 2.419z"/></svg></a>
+        </div>
       </div>
       <script>
-        // Poll for shared data for this session
+        // Poll for shared data for this session and show under QR
         const sid = "${sid}";
-        const sharedContent = document.getElementById('sharedContent');
-        const waitingMsg = document.getElementById('waitingMsg');
+        const sharedDataSection = document.getElementById('sharedDataSection');
+        function createDownloadLink(href, text, filename) {
+          const a = document.createElement('a');
+          a.href = href;
+          a.textContent = text;
+          a.download = filename || '';
+          a.className = 'shared-download-link';
+          a.style.display = 'inline-block';
+          a.style.margin = '8px 0 0 0';
+          a.style.color = '#00ff85';
+          a.style.fontWeight = '600';
+          a.style.textDecoration = 'underline';
+          return a;
+        }
         function showSharedData(shared) {
-          sharedContent.innerHTML = '';
+          sharedDataSection.innerHTML = '';
           let hasData = false;
           if (shared.url) {
-            const link = document.createElement('a');
-            link.href = shared.url;
-            link.textContent = shared.url;
+            const link = createDownloadLink(shared.url, 'Open Shared Link', null);
             link.target = '_blank';
-            link.className = 'shared-link';
-            sharedContent.appendChild(link);
+            sharedDataSection.appendChild(link);
             hasData = true;
           }
           if (shared.images && Array.isArray(shared.images) && shared.images.length > 0) {
-            shared.images.forEach((imgSrc, idx) => {
+            shared.images.forEach(function(imgSrc, idx) {
               const img = document.createElement('img');
               img.src = imgSrc;
               img.alt = 'Shared Image ' + (idx + 1);
-              img.className = 'shared-img';
-              sharedContent.appendChild(img);
+              img.style.maxWidth = '120px';
+              img.style.maxHeight = '120px';
+              img.style.display = 'block';
+              img.style.margin = '12px auto 4px auto';
+              sharedDataSection.appendChild(img);
+              const dl = createDownloadLink(imgSrc, 'Download Image', 'shared-image-' + (idx+1) + '.png');
+              sharedDataSection.appendChild(dl);
             });
             hasData = true;
           }
@@ -542,27 +595,30 @@ router.get('/', async (req, res) => {
             const img = document.createElement('img');
             img.src = shared.image;
             img.alt = 'Shared Image';
-            img.className = 'shared-img';
-            sharedContent.appendChild(img);
+            img.style.maxWidth = '120px';
+            img.style.maxHeight = '120px';
+            img.style.display = 'block';
+            img.style.margin = '12px auto 4px auto';
+            sharedDataSection.appendChild(img);
+            const dl = createDownloadLink(shared.image, 'Download Image', 'shared-image.png');
+            sharedDataSection.appendChild(dl);
             hasData = true;
           }
           if (!hasData) {
-            sharedContent.textContent = 'No data shared.';
+            sharedDataSection.innerHTML = '<div class="qr-stats"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 00-1.414 0L9 12.586l-2.293-2.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>20,000+ files shared securely</div><div class="qr-desc">No account needed - just scan & go</div>';
           }
         }
         function pollShared() {
-          fetch('/share/poll?sid=' + "${sid}")
-            .then(res => res.json())
-            .then(data => {
+          fetch('/share/poll?sid=' + sid)
+            .then(function(res) { return res.json(); })
+            .then(function(data) {
               if (data.status === 'ready') {
-                waitingMsg.style.display = 'none';
                 showSharedData(data.shared);
               } else {
-                waitingMsg.style.display = '';
                 setTimeout(pollShared, 2000);
               }
             })
-            .catch(() => setTimeout(pollShared, 2000));
+            .catch(function() { setTimeout(pollShared, 2000); });
         }
         pollShared();
       </script>
@@ -615,3 +671,4 @@ router.get('/poll', (req, res) => {
 });
 
 module.exports = router; 
+
