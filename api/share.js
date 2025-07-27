@@ -106,7 +106,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           font-weight: 400;
         }
         .container {
-          width: 95vw;
+          width: 100vw;
           max-width: 460px;
           background: rgba(30, 30, 30, 0.7);
           border-radius: 20px;
