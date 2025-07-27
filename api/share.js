@@ -55,14 +55,10 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
     <!DOCTYPE html>
     <html>
     <head>
-      <title>ZapKey Dark Glass UI</title>
+      <title>ZapKey – Share</title>
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <style>
-        @font-face {
-          font-family: 'SF Pro Display';
-          src: url('https://fonts.cdnfonts.com/s/59163/SFProDisplay-Regular.woff') format('woff');
-          font-weight: 400;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
         html, body {
           height: 100%;
           margin: 0;
@@ -72,8 +68,9 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           min-height: 100vh;
           height: 100vh;
           box-sizing: border-box;
-          font-family: 'SF Pro Display', sans-serif;
-          background: linear-gradient(135deg, #0f0f0f, #1e1e1e);
+          font-family: 'Inter', 'SF Pro Display', sans-serif;
+          background: #101114;
+          color: #fff;
           display: flex;
           flex-direction: column;
         }
@@ -84,32 +81,26 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           align-items: center;
         }
         .container {
-          width: 95%;
+          width: 95vw;
           max-width: 460px;
-          background: rgba(30, 30, 30, 0.6);
+          background: rgba(30, 30, 30, 0.7);
           border-radius: 20px;
-          padding: 24px;
+          padding: 28px 18px 24px 18px;
           backdrop-filter: blur(14px);
           box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
           color: #f1f1f1;
           position: relative;
         }
-        h2.intro-text {
-          margin: 0;
-          font-size: 1.2rem;
-          font-weight: 300;
-          color: #ccc;
-        }
         h2.brand-text {
-          margin-top: 4px;
-          font-size: 3.5rem;
+          margin: 0 0 12px 0;
+          font-size: 2.2rem;
           font-weight: 700;
-          background: linear-gradient(90deg, #0072ff, #002561);
+          background: linear-gradient(90deg, #00ffe7, #00ff85);
           -webkit-background-clip: text;
           -webkit-text-fill-color: transparent;
         }
         .msg {
-          width: -webkit-fill-available;
+          width: 100%;
           margin-bottom: 18px;
           padding: 12px 16px;
           border-radius: 10px;
@@ -128,7 +119,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           border: 1px solid #00e07a;
         }
         input[type="url"] {
-          width: -webkit-fill-available;
+          width: 100%;
           padding: 12px 16px;
           font-size: 1rem;
           border: 1px solid #444;
@@ -155,7 +146,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
         .upload-area {
           width: 100%;
           min-height: 160px;
-          border: 2px dashed #3b82f6;
+          border: 2px dashed #00ff85;
           border-radius: 14px;
           background: rgba(255, 255, 255, 0.04);
           display: flex;
@@ -167,10 +158,10 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           padding-bottom: 10px;
         }
         .upload-area.dragover {
-          border-color: #0072ff;
+          border-color: #00ffe7;
         }
         .upload-icon svg {
-          fill: #3b82f6;
+          fill: #00ff85;
           height: 48px;
           margin-bottom: 8px;
         }
@@ -234,17 +225,22 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           font-size: 1.1rem;
           border: none;
           border-radius: 10px;
-          background: linear-gradient(to right, #0036af, #004dd0, #003c9e);
-          color: white;
-          font-weight: 500;
+          background: linear-gradient(90deg, #00ffe7, #00ff85);
+          color: #101114;
+          font-weight: 600;
           cursor: pointer;
           margin-top: 12px;
+          box-shadow: 0 2px 12px rgba(0,255,180,0.08);
+          transition: background 0.2s;
+        }
+        .share-btn:hover {
+          background: linear-gradient(90deg, #00ff85, #00ffe7);
         }
         .footer {
           width: 100vw;
           text-align: center;
           font-size: 1.08rem;
-          color: #3b82f6;
+          color: #00ff85;
           letter-spacing: 0.01em;
           opacity: 0.95;
           padding: 18px 0 12px 0;
@@ -256,7 +252,6 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
     <body>
       <div class="main-content">
         <div class="container">
-          <h2 class="intro-text">Share everything with</h2>
           <h2 class="brand-text">ZapKey</h2>
           ${message ? `<div class="msg ${messageType}">${message}</div>` : ''}
           <form method="POST" enctype="multipart/form-data" id="shareForm">
@@ -304,8 +299,31 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
         const fileInput = document.getElementById('fileInput');
         const previewList = document.getElementById('previewList');
         let filesArr = [];
+        const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+        const errorMsgId = 'fileErrorMsg';
+        function showFileError(msg) {
+          let err = document.getElementById(errorMsgId);
+          if (!err) {
+            err = document.createElement('div');
+            err.id = errorMsgId;
+            err.style.color = '#ff4b6b';
+            err.style.background = 'rgba(255,0,60,0.13)';
+            err.style.border = '1px solid #ff4b6b';
+            err.style.borderRadius = '8px';
+            err.style.padding = '8px 12px';
+            err.style.margin = '10px 0';
+            err.style.textAlign = 'center';
+            previewList.parentNode.insertBefore(err, previewList);
+          }
+          err.textContent = msg;
+        }
+        function clearFileError() {
+          const err = document.getElementById(errorMsgId);
+          if (err) err.remove();
+        }
         function updatePreviews() {
           previewList.innerHTML = '';
+          clearFileError();
           if (filesArr.length === 0) {
             uploadArea.querySelector('.upload-text').style.display = '';
             uploadArea.style.minHeight = '160px';
@@ -324,10 +342,10 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
               img.alt = file.name;
               item.appendChild(img);
             }
-            const nameDiv = document.createElement('div');
-            nameDiv.className = 'file-name';
-            nameDiv.textContent = file.name;
-            item.appendChild(nameDiv);
+            // const nameDiv = document.createElement('div');
+            // nameDiv.className = 'file-name';
+            // nameDiv.textContent = file.name;
+            // item.appendChild(nameDiv);
             const removeBtn = document.createElement('button');
             removeBtn.className = 'remove-btn';
             removeBtn.type = 'button';
@@ -345,8 +363,28 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           });
         }
         fileInput.addEventListener('change', (e) => {
-          filesArr = Array.from(fileInput.files);
+          clearFileError();
+          const newFiles = Array.from(fileInput.files);
+          let valid = true;
+          newFiles.forEach(f => {
+            if (f.size > MAX_FILE_SIZE) {
+              showFileError('File "' + f.name + '" is too large (max 10MB per file).');
+              valid = false;
+            }
+          });
+          if (!valid) {
+            fileInput.value = '';
+            return;
+          }
+          // Additive selection: add new files that aren't already in filesArr
+          newFiles.forEach(f => {
+            if (!filesArr.some(existing => existing.name === f.name && existing.size === f.size && existing.lastModified === f.lastModified)) {
+              filesArr.push(f);
+            }
+          });
           updatePreviews();
+          // Reset file input so same file can be selected again
+          fileInput.value = '';
         });
         uploadArea.addEventListener('click', (e) => {
           if (e.target === uploadArea || e.target.classList.contains('upload-icon') || e.target.classList.contains('upload-text')) {
@@ -361,13 +399,26 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
         uploadArea.addEventListener('drop', (e) => {
           e.preventDefault();
           uploadArea.classList.remove('dragover');
+          clearFileError();
           if (e.dataTransfer.files && e.dataTransfer.files.length > 0) {
-            filesArr = Array.from(e.dataTransfer.files);
+            const droppedFiles = Array.from(e.dataTransfer.files);
+            let valid = true;
+            droppedFiles.forEach(f => {
+              if (f.size > MAX_FILE_SIZE) {
+                showFileError('File "' + f.name + '" is too large (max 10MB per file).');
+                valid = false;
+              }
+            });
+            if (!valid) return;
+            // Additive selection: add new files that aren't already in filesArr
+            droppedFiles.forEach(f => {
+              if (!filesArr.some(existing => existing.name === f.name && existing.size === f.size && existing.lastModified === f.lastModified)) {
+                filesArr.push(f);
+              }
+            });
             updatePreviews();
-            // Update file input
-            const dt = new DataTransfer();
-            filesArr.forEach(f => dt.items.add(f));
-            fileInput.files = dt.files;
+            // Reset file input so same file can be selected again
+            fileInput.value = '';
           }
         });
       </script>
