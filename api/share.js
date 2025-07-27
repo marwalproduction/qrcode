@@ -9,6 +9,43 @@ const sessions = global._shareSessions = global._shareSessions || new Map();
 // In-memory counter for total files shared
 const totalFilesShared = global._totalFilesShared = global._totalFilesShared || { count: 0 };
 
+// Session timeout management (5 minutes)
+const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutes in milliseconds
+const sessionTimeouts = global._sessionTimeouts = global._sessionTimeouts || new Map();
+
+// Clean up expired sessions periodically
+setInterval(() => {
+  const now = Date.now();
+  for (const [sid, timestamp] of sessionTimeouts.entries()) {
+    if (now - timestamp > SESSION_TIMEOUT) {
+      sessions.delete(sid);
+      sessionTimeouts.delete(sid);
+    }
+  }
+}, 60000); // Check every minute
+
+// Helper function to create session with timeout
+function createSession(sid, data) {
+  sessions.set(sid, data);
+  sessionTimeouts.set(sid, Date.now());
+}
+
+// Helper function to get session and check if expired
+function getSession(sid) {
+  const timestamp = sessionTimeouts.get(sid);
+  if (!timestamp) return null;
+  
+  const now = Date.now();
+  if (now - timestamp > SESSION_TIMEOUT) {
+    // Session expired, clean up
+    sessions.delete(sid);
+    sessionTimeouts.delete(sid);
+    return null;
+  }
+  
+  return sessions.get(sid);
+}
+
 // Multer setup for file uploads (in memory)
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } }); // 2MB limit
@@ -654,7 +691,7 @@ router.post('/share', upload.array('image'), (req, res) => {
   if (!shared.url && (!shared.images || shared.images.length === 0)) {
     return res.status(400).send(renderSharePage({ sid, message: 'Please provide a valid URL or upload an image.', messageType: 'error', urlValue: url }));
   }
-  sessions.set(sid, shared);
+  createSession(sid, shared);
   // Show success message on same page
   res.send(renderSharePage({ sid, message: 'Shared successfully! You can close this page.', messageType: 'success', urlValue: '' }));
 });
@@ -663,10 +700,10 @@ router.post('/share', upload.array('image'), (req, res) => {
 router.get('/poll', (req, res) => {
   const { sid } = req.query;
   if (!sid) return res.status(400).json({ error: 'Missing sid' });
-  const shared = sessions.get(sid);
+  const shared = getSession(sid);
   if (!shared) return res.json({ status: 'waiting' });
   // One-time use: clear after sending
-  sessions.delete(sid);
+  // The session will be cleaned up by the periodic cleanup
   res.json({ status: 'ready', shared });
 });
 
