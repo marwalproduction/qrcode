@@ -125,7 +125,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           -webkit-text-fill-color: transparent;
         }
         .msg {
-          width: -webkit-fill-available;
+          width: 100%;
           margin-bottom: 18px;
           padding: 12px 16px;
           border-radius: 10px;
@@ -144,7 +144,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           border: 1px solid #00e07a;
         }
         input[type="url"] {
-          width: -webkit-fill-available;
+          width: 100%;
           padding: 12px 16px;
           font-size: 1rem;
           border: 1px solid #444;
@@ -626,14 +626,37 @@ router.get('/', async (req, res) => {
           vertical-align: middle;
         }
         @media (max-width: 600px) {
-          .container {
+          .container, .hero-section {
             padding: 0 4vw;
             max-width: 99vw;
           }
+          .main-content {
+            padding: 0;
+          }
+          .hero-headline {
+            font-size: 1.4rem;
+          }
+          .hero-subheadline {
+            font-size: 0.98rem;
+          }
+          .preview-item img {
+            max-width: 70vw;
+            max-height: 60vw;
+          }
+          .upload-icon svg {
+            height: 36px;
+          }
+          .footer {
+            font-size: 0.98rem;
+            padding: 18px 0 10px 0;
+          }
           .qr-img {
-            width: 110px;
-            height: 110px;
-            padding: 6px;
+            width: 180px !important;
+            height: 180px !important;
+            min-width: 120px;
+            min-height: 120px;
+            max-width: 90vw;
+            max-height: 90vw;
           }
         }
       </style>
