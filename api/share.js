@@ -613,6 +613,7 @@ router.get('/', async (req, res) => {
         function showSharedData(shared) {
           sharedDataSection.innerHTML = '';
           let hasData = false;
+          
           if (shared.url) {
             const link = createDownloadLink(shared.url, 'Open Shared Link', null);
             link.target = '_blank';
@@ -620,34 +621,102 @@ router.get('/', async (req, res) => {
             sharedDataSection.appendChild(link);
             hasData = true;
           }
+          
           if (shared.images && Array.isArray(shared.images) && shared.images.length > 0) {
+            // Create responsive image grid
+            const imageGrid = document.createElement('div');
+            imageGrid.style.display = 'grid';
+            imageGrid.style.gridTemplateColumns = 'repeat(auto-fit, minmax(100px, 1fr))';
+            imageGrid.style.gap = '12px';
+            imageGrid.style.marginTop = '16px';
+            imageGrid.style.width = '100%';
+            
             shared.images.forEach(function(imgSrc, idx) {
+              const imageContainer = document.createElement('div');
+              imageContainer.style.position = 'relative';
+              imageContainer.style.display = 'flex';
+              imageContainer.style.flexDirection = 'column';
+              imageContainer.style.alignItems = 'center';
+              
               const img = document.createElement('img');
               img.src = imgSrc;
               img.alt = 'Shared Image ' + (idx + 1);
-              img.style.maxWidth = '120px';
-              img.style.maxHeight = '120px';
-              img.style.display = 'block';
-              img.style.margin = '12px auto 4px auto';
-              sharedDataSection.appendChild(img);
-              const dl = createDownloadLink(imgSrc, 'Download Image', 'shared-image-' + (idx+1) + '.png');
-              sharedDataSection.appendChild(dl);
+              img.style.width = '100%';
+              img.style.height = '100px';
+              img.style.objectFit = 'cover';
+              img.style.borderRadius = '8px';
+              img.style.marginBottom = '8px';
+              
+              const downloadBtn = document.createElement('button');
+              downloadBtn.innerHTML = '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4h12v-2H5v2z"/></svg>Download';
+              downloadBtn.style.background = 'linear-gradient(90deg, #00ffe7, #00ff85)';
+              downloadBtn.style.color = '#101114';
+              downloadBtn.style.border = 'none';
+              downloadBtn.style.borderRadius = '6px';
+              downloadBtn.style.padding = '6px 12px';
+              downloadBtn.style.fontSize = '0.9rem';
+              downloadBtn.style.fontWeight = '600';
+              downloadBtn.style.cursor = 'pointer';
+              downloadBtn.style.width = '100%';
+              downloadBtn.style.display = 'flex';
+              downloadBtn.style.alignItems = 'center';
+              downloadBtn.style.justifyContent = 'center';
+              downloadBtn.onclick = function() {
+                const a = document.createElement('a');
+                a.href = imgSrc;
+                a.download = 'shared-image-' + (idx+1) + '.png';
+                a.click();
+              };
+              
+              imageContainer.appendChild(img);
+              imageContainer.appendChild(downloadBtn);
+              imageGrid.appendChild(imageContainer);
             });
+            
+            sharedDataSection.appendChild(imageGrid);
             hasData = true;
           }
+          
           if (shared.image && (!shared.images || shared.images.length === 0)) {
+            const imageContainer = document.createElement('div');
+            imageContainer.style.display = 'flex';
+            imageContainer.style.flexDirection = 'column';
+            imageContainer.style.alignItems = 'center';
+            imageContainer.style.marginTop = '16px';
+            
             const img = document.createElement('img');
             img.src = shared.image;
             img.alt = 'Shared Image';
             img.style.maxWidth = '120px';
             img.style.maxHeight = '120px';
-            img.style.display = 'block';
-            img.style.margin = '12px auto 4px auto';
-            sharedDataSection.appendChild(img);
-            const dl = createDownloadLink(shared.image, 'Download Image', 'shared-image.png');
-            sharedDataSection.appendChild(dl);
+            img.style.borderRadius = '8px';
+            img.style.marginBottom = '12px';
+            
+            const downloadBtn = document.createElement('button');
+            downloadBtn.innerHTML = '<svg width="16" height="16" fill="currentColor" viewBox="0 0 24 24" style="margin-right: 6px;"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 4h12v-2H5v2z"/></svg>Download Image';
+            downloadBtn.style.background = 'linear-gradient(90deg, #00ffe7, #00ff85)';
+            downloadBtn.style.color = '#101114';
+            downloadBtn.style.border = 'none';
+            downloadBtn.style.borderRadius = '8px';
+            downloadBtn.style.padding = '8px 16px';
+            downloadBtn.style.fontWeight = '600';
+            downloadBtn.style.cursor = 'pointer';
+            downloadBtn.style.display = 'flex';
+            downloadBtn.style.alignItems = 'center';
+            downloadBtn.style.justifyContent = 'center';
+            downloadBtn.onclick = function() {
+              const a = document.createElement('a');
+              a.href = shared.image;
+              a.download = 'shared-image.png';
+              a.click();
+            };
+            
+            imageContainer.appendChild(img);
+            imageContainer.appendChild(downloadBtn);
+            sharedDataSection.appendChild(imageContainer);
             hasData = true;
           }
+          
           if (!hasData) {
             sharedDataSection.innerHTML = '<div class="qr-stats"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 00-1.414 0L9 12.586l-2.293-2.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>20,000+ files shared securely</div><div class="qr-desc">No account needed - just scan & go</div>';
           }
