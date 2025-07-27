@@ -569,13 +569,16 @@ router.get('/', async (req, res) => {
         </div>
         <div class="qr-card">
           <div class="qr-title">Scan QR to Share</div>
-          <img class="qr-img" src="${qrData}" alt="ZapKey QR Code" />
+          <img class="qr-img" src="${qrData}" alt="ZapKey QR Code" id="qrImage" />
           <div id="sharedDataSection">
             <div class="qr-stats">
               <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 00-1.414 0L9 12.586l-2.293-2.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>
               20,000+ files shared securely
             </div>
             <div class="qr-desc">No account needed - just scan & go</div>
+          </div>
+          <div id="scanAgainSection" style="display: none;">
+            <button onclick="window.location.reload()" style="background: linear-gradient(90deg, #00ffe7, #00ff85); color: #101114; border: none; border-radius: 10px; padding: 12px 24px; font-weight: 600; cursor: pointer; margin-top: 16px;">Scan Again to Receive More</button>
           </div>
         </div>
       </div>
@@ -591,6 +594,9 @@ router.get('/', async (req, res) => {
         // Poll for shared data for this session and show under QR
         const sid = "${sid}";
         const sharedDataSection = document.getElementById('sharedDataSection');
+        const scanAgainSection = document.getElementById('scanAgainSection');
+        const qrImage = document.getElementById('qrImage');
+
         function createDownloadLink(href, text, filename) {
           const a = document.createElement('a');
           a.href = href;
@@ -610,6 +616,7 @@ router.get('/', async (req, res) => {
           if (shared.url) {
             const link = createDownloadLink(shared.url, 'Open Shared Link', null);
             link.target = '_blank';
+            link.rel = 'noopener noreferrer';
             sharedDataSection.appendChild(link);
             hasData = true;
           }
@@ -643,6 +650,12 @@ router.get('/', async (req, res) => {
           }
           if (!hasData) {
             sharedDataSection.innerHTML = '<div class="qr-stats"><svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 6.293a1 1 0 00-1.414 0L9 12.586l-2.293-2.293a1 1 0 00-1.414 1.414l3 3a1 1 0 001.414 0l7-7a1 1 0 000-1.414z" clip-rule="evenodd"/></svg>20,000+ files shared securely</div><div class="qr-desc">No account needed - just scan & go</div>';
+          }
+          
+          // Hide QR code and show scan again button when content is received
+          if (hasData) {
+            qrImage.style.display = 'none';
+            scanAgainSection.style.display = 'block';
           }
         }
         function pollShared() {
