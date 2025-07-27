@@ -597,11 +597,11 @@ router.get('/', async (req, res) => {
         const scanAgainSection = document.getElementById('scanAgainSection');
         const qrImage = document.getElementById('qrImage');
 
-        function createDownloadLink(href, text, filename) {
+        function createDownloadLink(href, text, filename, isDownload) {
           const a = document.createElement('a');
           a.href = href;
           a.textContent = text;
-          a.download = filename || '';
+          if (isDownload && filename) a.download = filename;
           a.className = 'shared-download-link';
           a.style.display = 'inline-block';
           a.style.margin = '8px 0 0 0';
@@ -610,12 +610,13 @@ router.get('/', async (req, res) => {
           a.style.textDecoration = 'underline';
           return a;
         }
+
         function showSharedData(shared) {
           sharedDataSection.innerHTML = '';
           let hasData = false;
           
           if (shared.url) {
-            const link = createDownloadLink(shared.url, 'Open Shared Link', null);
+            const link = createDownloadLink(shared.url, 'Open Shared Link', null, false);
             link.target = '_blank';
             link.rel = 'noopener noreferrer';
             sharedDataSection.appendChild(link);
@@ -662,9 +663,7 @@ router.get('/', async (req, res) => {
               downloadBtn.style.alignItems = 'center';
               downloadBtn.style.justifyContent = 'center';
               downloadBtn.onclick = function() {
-                const a = document.createElement('a');
-                a.href = imgSrc;
-                a.download = 'shared-image-' + (idx+1) + '.png';
+                const a = createDownloadLink(imgSrc, '', 'shared-image-' + (idx+1) + '.png', true);
                 a.click();
               };
               
@@ -705,9 +704,7 @@ router.get('/', async (req, res) => {
             downloadBtn.style.alignItems = 'center';
             downloadBtn.style.justifyContent = 'center';
             downloadBtn.onclick = function() {
-              const a = document.createElement('a');
-              a.href = shared.image;
-              a.download = 'shared-image.png';
+              const a = createDownloadLink(shared.image, '', 'shared-image.png', true);
               a.click();
             };
             
