@@ -13,6 +13,73 @@ app.use(bodyParser.json());
 const shareRouter = require('./share');
 app.use('/share', shareRouter);
 
+// Root route handler
+app.get('/', (req, res) => {
+  console.log('Root endpoint hit');
+  res.send(`
+    <html>
+    <head>
+      <title>Zapkey - QR Code Sharing</title>
+      <style>
+        body { 
+          font-family: Arial, sans-serif; 
+          text-align: center; 
+          padding: 50px; 
+          background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+          color: white;
+          margin: 0;
+          min-height: 100vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .container { 
+          max-width: 600px; 
+          margin: 0 auto; 
+          background: rgba(255,255,255,0.1);
+          padding: 40px;
+          border-radius: 20px;
+          backdrop-filter: blur(10px);
+        }
+        h1 { 
+          font-size: 3em; 
+          margin-bottom: 20px;
+          text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+        p { 
+          font-size: 1.2em; 
+          margin-bottom: 30px;
+          line-height: 1.6;
+        }
+        .btn {
+          display: inline-block;
+          background: rgba(255,255,255,0.2);
+          color: white;
+          padding: 15px 30px;
+          text-decoration: none;
+          border-radius: 50px;
+          font-size: 1.1em;
+          transition: all 0.3s ease;
+          border: 2px solid rgba(255,255,255,0.3);
+        }
+        .btn:hover {
+          background: rgba(255,255,255,0.3);
+          transform: translateY(-2px);
+          box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+        }
+      </style>
+    </head>
+    <body>
+      <div class="container">
+        <h1>🔑 Zapkey</h1>
+        <p>Share files, URLs, and credentials instantly via QR codes. Scan the QR code with your mobile device to receive shared content.</p>
+        <a href="/share" class="btn">Start Sharing</a>
+      </div>
+    </body>
+    </html>
+  `);
+});
+
 // In-memory store: sid -> { qrData }
 // Note: In serverless, this will reset on each cold start
 const sessions = new Map();
