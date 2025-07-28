@@ -1162,26 +1162,45 @@ app.get('/share', (req, res) => {
                 align-items: center;
             }
             
-            .header {
-                margin-bottom: 40px;
+            /* Hero Section for Share Page */
+            .hero {
+                text-align: center;
+                margin-bottom: 60px;
+                animation: fadeInUp 1s ease-out;
             }
             
             .logo {
-                font-size: 2rem;
-                font-weight: 700;
-                background: linear-gradient(135deg, #ffffff 0%, #a8a8a8 100%);
+                font-size: 4rem;
+                font-weight: 800;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+                background-size: 300% 300%;
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
-                margin-bottom: 8px;
+                margin-bottom: 16px;
                 letter-spacing: -0.02em;
+                animation: gradientShift 3s ease-in-out infinite;
+            }
+            
+            @keyframes gradientShift {
+                0%, 100% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
+            }
+            
+            .tagline {
+                color: #a8a8a8;
+                font-size: 1.25rem;
+                font-weight: 400;
+                margin-bottom: 8px;
+                letter-spacing: -0.01em;
+                animation: fadeInUp 1s ease-out 0.2s both;
             }
             
             .subtitle {
-                color: #8e8e93;
+                color: #666;
                 font-size: 1rem;
-                font-weight: 400;
-                letter-spacing: -0.01em;
+                font-weight: 300;
+                animation: fadeInUp 1s ease-out 0.4s both;
             }
             
             .form-container {
@@ -1352,6 +1371,18 @@ app.get('/share', (req, res) => {
                 100% { transform: rotate(360deg); }
             }
             
+            /* Animations */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
             .success-message {
                 background: rgba(52, 199, 89, 0.1);
                 color: #34c759;
@@ -1414,9 +1445,10 @@ app.get('/share', (req, res) => {
     </head>
     <body>
         <div class="container">
-            <div class="header">
+            <div class="hero">
                 <div class="logo">ZapKey</div>
-                <div class="subtitle">Share your data securely</div>
+                <div class="tagline">Share your data securely</div>
+                <div class="subtitle">Fast, secure, and simple file sharing</div>
             </div>
             
             <div class="form-container">
@@ -1453,6 +1485,19 @@ app.get('/share', (req, res) => {
                     </button>
                 </form>
             </div>
+        </div>
+        
+        <!-- Animated Background Particles -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
         </div>
         
         <script>
