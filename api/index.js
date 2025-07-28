@@ -328,10 +328,16 @@ app.get('/', (req, res) => {
                 font-weight: 500;
                 margin-top: 24px;
                 padding: 16px 24px;
-                background: rgba(255, 255, 255, 0.05);
+                background: rgba(255, 255, 255, 0.08);
                 border-radius: 16px;
-                border: 1px solid rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.15);
                 backdrop-filter: blur(10px);
+                transition: all 0.3s ease;
+            }
+            
+            .status-indicator:hover {
+                background: rgba(255, 255, 255, 0.12);
+                border-color: rgba(255, 255, 255, 0.2);
             }
             
             .spinner {
@@ -804,6 +810,12 @@ app.get('/', (req, res) => {
                     <div class="qr-instructions">
                         Scan this QR code with any device to share files, images, or URLs securely
                     </div>
+                    
+                    <!-- Status Indicator - Now inside QR box -->
+                    <div class="status-indicator" id="status-indicator">
+                        <div class="spinner"></div>
+                        <span>Waiting for shared data...</span>
+                    </div>
                 </div>
                 
                 <!-- Features Section -->
@@ -853,12 +865,6 @@ app.get('/', (req, res) => {
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Status Indicator -->
-            <div class="status-indicator" id="status-indicator">
-                <div class="spinner"></div>
-                <span>Waiting for shared data...</span>
             </div>
             
             <!-- Shared Data Section -->
