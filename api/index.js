@@ -88,9 +88,6 @@ app.get('/', (req, res) => {
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>ZapKey - Secure Data Sharing</title>
-        <link rel="preconnect" href="https://fonts.googleapis.com">
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         <style>
             * {
                 margin: 0;
@@ -99,7 +96,7 @@ app.get('/', (req, res) => {
             }
             
             body {
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
                 background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 25%, #0f0f23 50%, #1a1a1a 75%, #0c0c0c 100%);
                 color: #ffffff;
                 min-height: 100vh;
@@ -549,9 +546,9 @@ app.get('/', (req, res) => {
                 display: block;
                 margin: 20px auto 0;
                 padding: 18px 28px;
-                background: linear-gradient(135deg, #ff3b30, #ff453a);
+                background: rgba(255, 255, 255, 0.1);
                 color: white;
-                border: none;
+                border: 1px solid rgba(255, 255, 255, 0.2);
                 border-radius: 16px;
                 font-weight: 600;
                 font-size: 1rem;
@@ -559,11 +556,31 @@ app.get('/', (req, res) => {
                 transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
                 position: relative;
                 z-index: 1;
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                overflow: hidden;
+            }
+            
+            .reload-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                transition: left 0.5s ease;
             }
             
             .reload-btn:hover {
                 transform: translateY(-4px);
-                box-shadow: 0 12px 32px rgba(255, 59, 48, 0.4);
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            }
+            
+            .reload-btn:hover::before {
+                left: 100%;
             }
             
             /* Animations */
@@ -917,14 +934,16 @@ app.get('/', (req, res) => {
                                         </svg>
                                         Shared URL Received
                                     </h3>
-                                    <a href="\${data.data.url}" target="_blank" class="url-link">
-                                        \${data.data.url}
-                                    </a>
-                                    <br>
-                                    <a href="\${data.data.url}" target="_blank" class="download-btn">
-                                        Open Link
-                                    </a>
-                                    <br><br>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin: 20px 0; padding: 16px 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <a href="\${data.data.url}" target="_blank" class="url-link" style="flex: 1; color: #007aff; text-decoration: none; font-weight: 500; word-break: break-all;">
+                                            \${data.data.url}
+                                        </a>
+                                        <a href="\${data.data.url}" target="_blank" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: rgba(0, 122, 255, 0.1); border-radius: 8px; transition: all 0.3s ease;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#007aff" style="transform: rotate(45deg);">
+                                                <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+                                            </svg>
+                                        </a>
+                                    </div>
                                     <button onclick="location.reload()" class="reload-btn">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
                                             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
@@ -1106,7 +1125,7 @@ app.get('/share', (req, res) => {
             }
             
             body {
-                font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
                 background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 25%, #0f0f23 50%, #1a1a1a 75%, #0c0c0c 100%);
                 color: #ffffff;
                 min-height: 100vh;
@@ -1631,7 +1650,7 @@ app.get('/receive', (req, res) => {
         <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body {
-                font-family: 'Inter', sans-serif;
+                font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif;
                 background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
                 min-height: 100vh;
                 display: flex;
@@ -1698,6 +1717,47 @@ app.get('/receive', (req, res) => {
                 margin: 10px 0;
                 cursor: pointer;
             }
+            
+            .reload-btn {
+                display: block;
+                margin: 20px auto 0;
+                padding: 18px 28px;
+                background: rgba(255, 255, 255, 0.1);
+                color: white;
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 16px;
+                font-weight: 600;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                position: relative;
+                z-index: 1;
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                overflow: hidden;
+            }
+            
+            .reload-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                transition: left 0.5s ease;
+            }
+            
+            .reload-btn:hover {
+                transform: translateY(-4px);
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            }
+            
+            .reload-btn:hover::before {
+                left: 100%;
+            }
         </style>
     </head>
     <body>
@@ -1726,13 +1786,22 @@ app.get('/receive', (req, res) => {
                             if (data.data.url) {
                                 content.innerHTML = \`
                                     <h3>Shared URL</h3>
-                                    <a href="\${data.data.url}" target="_blank" class="url-link">
-                                        \${data.data.url}
-                                    </a>
-                                    <br>
-                                    <a href="\${data.data.url}" target="_blank" class="download-btn">
-                                        Open Link
-                                    </a>
+                                    <div style="display: flex; align-items: center; gap: 12px; margin: 20px 0; padding: 16px 20px; background: rgba(255, 255, 255, 0.05); border-radius: 12px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                        <a href="\${data.data.url}" target="_blank" class="url-link" style="flex: 1; color: #007aff; text-decoration: none; font-weight: 500; word-break: break-all;">
+                                            \${data.data.url}
+                                        </a>
+                                        <a href="\${data.data.url}" target="_blank" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; background: rgba(0, 122, 255, 0.1); border-radius: 8px; transition: all 0.3s ease;">
+                                            <svg width="20" height="20" viewBox="0 0 24 24" fill="#007aff" style="transform: rotate(45deg);">
+                                                <path d="M19 19H5V5h7V3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/>
+                                            </svg>
+                                        </a>
+                                    </div>
+                                    <button onclick="location.reload()" class="reload-btn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                        </svg>
+                                        Reload to receive more
+                                    </button>
                                 \`;
                             } else if (data.data.files && data.data.files.length > 0) {
                                 const files = data.data.files;
@@ -1800,6 +1869,12 @@ app.get('/receive', (req, res) => {
                                             </tbody>
                                         </table>
                                     </div>
+                                    <button onclick="location.reload()" class="reload-btn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                        </svg>
+                                        Reload to receive more
+                                    </button>
                                 \`;
                             } else if (data.data.file) {
                                 const fileData = data.data.file;
@@ -1813,6 +1888,12 @@ app.get('/receive', (req, res) => {
                                         <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
                                             Download Image
                                         </a>
+                                        <button onclick="location.reload()" class="reload-btn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                            </svg>
+                                            Reload to receive more
+                                        </button>
                                     \`;
                                 } else {
                                     content.innerHTML = \`
@@ -1821,6 +1902,12 @@ app.get('/receive', (req, res) => {
                                         <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
                                             Download File
                                         </a>
+                                        <button onclick="location.reload()" class="reload-btn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                            </svg>
+                                            Reload to receive more
+                                        </button>
                                     \`;
                                 }
                             }
