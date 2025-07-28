@@ -90,7 +90,7 @@ app.get('/', (req, res) => {
         <title>ZapKey - Secure Data Sharing</title>
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
         <style>
             * {
                 margin: 0;
@@ -100,97 +100,498 @@ app.get('/', (req, res) => {
             
             body {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-                background: #000000;
+                background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 25%, #0f0f23 50%, #1a1a1a 75%, #0c0c0c 100%);
                 color: #ffffff;
                 min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
                 overflow-x: hidden;
-            }
-            
-            .container {
-                max-width: 480px;
-                width: 90%;
-                text-align: center;
                 position: relative;
             }
             
+            /* Animated background particles */
+            .particles {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 1;
+            }
+            
+            .particle {
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+            .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+            .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+            .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+            .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+            .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+            .particle:nth-child(7) { left: 70%; animation-delay: 0.5s; }
+            .particle:nth-child(8) { left: 80%; animation-delay: 1.5s; }
+            .particle:nth-child(9) { left: 90%; animation-delay: 2.5s; }
+            
+            @keyframes float {
+                0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+                50% { transform: translateY(-100px) rotate(180deg); opacity: 1; }
+            }
+            
+            .container {
+                position: relative;
+                z-index: 2;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 40px 20px;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+            }
+            
+            /* Hero Section */
+            .hero {
+                text-align: center;
+                margin-bottom: 60px;
+                animation: fadeInUp 1s ease-out;
+            }
+            
             .logo {
-                font-size: 2.5rem;
-                font-weight: 700;
-                background: linear-gradient(135deg, #ffffff 0%, #a8a8a8 100%);
+                font-size: 4rem;
+                font-weight: 800;
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 25%, #f093fb 50%, #f5576c 75%, #4facfe 100%);
+                background-size: 300% 300%;
                 -webkit-background-clip: text;
                 -webkit-text-fill-color: transparent;
                 background-clip: text;
-                margin-bottom: 8px;
+                margin-bottom: 16px;
                 letter-spacing: -0.02em;
+                animation: gradientShift 3s ease-in-out infinite;
+            }
+            
+            @keyframes gradientShift {
+                0%, 100% { background-position: 0% 50%; }
+                50% { background-position: 100% 50%; }
             }
             
             .tagline {
-                color: #8e8e93;
-                font-size: 1.125rem;
+                color: #a8a8a8;
+                font-size: 1.25rem;
                 font-weight: 400;
-                margin-bottom: 48px;
+                margin-bottom: 8px;
                 letter-spacing: -0.01em;
+                animation: fadeInUp 1s ease-out 0.2s both;
             }
             
+            .subtitle {
+                color: #666;
+                font-size: 1rem;
+                font-weight: 300;
+                animation: fadeInUp 1s ease-out 0.4s both;
+            }
+            
+            /* Main Content Grid */
+            .main-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 60px;
+                align-items: center;
+                width: 100%;
+                max-width: 1000px;
+            }
+            
+            /* QR Section */
             .qr-section {
-                background: rgba(255, 255, 255, 0.05);
-                border-radius: 24px;
-                padding: 40px 32px;
-                margin-bottom: 40px;
+                background: rgba(255, 255, 255, 0.03);
+                border-radius: 32px;
+                padding: 50px 40px;
                 border: 1px solid rgba(255, 255, 255, 0.1);
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
+                backdrop-filter: blur(30px);
+                -webkit-backdrop-filter: blur(30px);
+                position: relative;
+                overflow: hidden;
+                animation: fadeInLeft 1s ease-out 0.6s both;
+            }
+            
+            .qr-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                animation: shimmer 3s infinite;
+            }
+            
+            @keyframes shimmer {
+                0% { left: -100%; }
+                100% { left: 100%; }
+            }
+            
+            .tagline {
+                color: #a8a8a8;
+                font-size: 1.25rem;
+                font-weight: 400;
+                margin-bottom: 8px;
+                letter-spacing: -0.01em;
+                animation: fadeInUp 1s ease-out 0.2s both;
+            }
+            
+            .subtitle {
+                color: #666;
+                font-size: 1rem;
+                font-weight: 300;
+                animation: fadeInUp 1s ease-out 0.4s both;
+            }
+            
+            /* Main Content Grid */
+            .main-content {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 60px;
+                align-items: center;
+                width: 100%;
+                max-width: 1000px;
+            }
+            
+            /* QR Section */
+            .qr-section {
+                background: rgba(255, 255, 255, 0.03);
+                border-radius: 32px;
+                padding: 50px 40px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(30px);
+                -webkit-backdrop-filter: blur(30px);
+                position: relative;
+                overflow: hidden;
+                animation: fadeInLeft 1s ease-out 0.6s both;
+            }
+            
+            .qr-section::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                animation: shimmer 3s infinite;
+            }
+            
+            @keyframes shimmer {
+                0% { left: -100%; }
+                100% { left: 100%; }
             }
             
             .qr-code {
-                width: 200px;
-                height: 200px;
+                width: 220px;
+                height: 220px;
                 margin: 0 auto 32px;
                 background: #ffffff;
-                border-radius: 16px;
-                padding: 16px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                transition: transform 0.3s ease;
+                border-radius: 20px;
+                padding: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                position: relative;
             }
             
             .qr-code:hover {
-                transform: scale(1.02);
+                transform: scale(1.05) rotate(2deg);
+                box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
             }
             
             .qr-instructions {
-                color: #8e8e93;
-                font-size: 0.9375rem;
-                line-height: 1.5;
+                color: #a8a8a8;
+                font-size: 1rem;
+                line-height: 1.6;
                 font-weight: 400;
                 max-width: 280px;
                 margin: 0 auto;
+                text-align: center;
             }
             
+            /* Status Indicator */
             .status-indicator {
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 gap: 12px;
-                color: #8e8e93;
-                font-size: 0.875rem;
+                color: #a8a8a8;
+                font-size: 0.9rem;
                 font-weight: 500;
                 margin-top: 24px;
-                padding: 16px;
-                background: rgba(255, 255, 255, 0.03);
-                border-radius: 12px;
-                border: 1px solid rgba(255, 255, 255, 0.05);
+                padding: 16px 24px;
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 16px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                backdrop-filter: blur(10px);
             }
             
             .spinner {
-                width: 16px;
-                height: 16px;
+                width: 18px;
+                height: 18px;
                 border: 2px solid rgba(255, 255, 255, 0.1);
-                border-top: 2px solid #007aff;
+                border-top: 2px solid #667eea;
                 border-radius: 50%;
                 animation: spin 1s linear infinite;
+            }
+            
+            /* Features Section */
+            .features-section {
+                animation: fadeInRight 1s ease-out 0.8s both;
+            }
+            
+            .features-title {
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 32px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                text-align: center;
+            }
+            
+            .features {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .feature {
+                background: rgba(255, 255, 255, 0.05);
+                border-radius: 20px;
+                padding: 30px 24px;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .feature::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, rgba(102, 126, 234, 0.1), rgba(118, 75, 162, 0.1));
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .feature:hover {
+                transform: translateY(-8px) scale(1.02);
+                background: rgba(255, 255, 255, 0.08);
+                border-color: rgba(102, 126, 234, 0.3);
+            }
+            
+            .feature:hover::before {
+                opacity: 1;
+            }
+            
+            .feature-content {
+                position: relative;
+                z-index: 1;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+            }
+            
+            .feature-icon {
+                width: 50px;
+                height: 50px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                border-radius: 12px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-shrink: 0;
+                box-shadow: 0 8px 24px rgba(102, 126, 234, 0.3);
+            }
+            
+            .feature-icon svg {
+                width: 24px;
+                height: 24px;
+                fill: #ffffff;
+            }
+            
+            .feature-text {
+                flex: 1;
+            }
+            
+            .feature-title {
+                font-weight: 600;
+                font-size: 1.1rem;
+                margin-bottom: 6px;
+                color: #ffffff;
+            }
+            
+            .feature-desc {
+                font-size: 0.9rem;
+                color: #a8a8a8;
+                line-height: 1.5;
+            }
+            
+            /* Shared Data Section */
+            .shared-data {
+                background: rgba(52, 199, 89, 0.1);
+                border: 1px solid rgba(52, 199, 89, 0.2);
+                border-radius: 32px;
+                padding: 50px 40px;
+                margin-top: 40px;
+                backdrop-filter: blur(30px);
+                -webkit-backdrop-filter: blur(30px);
+                position: relative;
+                overflow: hidden;
+                animation: fadeInUp 0.8s ease-out;
+            }
+            
+            .shared-data::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(135deg, rgba(52, 199, 89, 0.05), rgba(52, 199, 89, 0.02));
+                pointer-events: none;
+            }
+            
+            .shared-data h3 {
+                color: #34c759;
+                margin-bottom: 24px;
+                font-size: 1.5rem;
+                font-weight: 700;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 12px;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .shared-data h3 svg {
+                width: 24px;
+                height: 24px;
+                fill: #34c759;
+            }
+            
+            .url-link {
+                display: inline-block;
+                padding: 18px 28px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                text-decoration: none;
+                border-radius: 16px;
+                font-weight: 600;
+                font-size: 1rem;
+                margin: 12px 0;
+                word-break: break-all;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                border: none;
+                cursor: pointer;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .url-link:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 12px 32px rgba(102, 126, 234, 0.4);
+            }
+            
+            .file-image {
+                max-width: 100%;
+                max-height: 350px;
+                border-radius: 20px;
+                box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+                margin: 20px 0;
+                border: 1px solid rgba(255, 255, 255, 0.1);
+                position: relative;
+                z-index: 1;
+            }
+            
+            .download-btn {
+                display: inline-block;
+                padding: 18px 28px;
+                background: linear-gradient(135deg, #34c759, #30d158);
+                color: white;
+                text-decoration: none;
+                border-radius: 16px;
+                font-weight: 600;
+                font-size: 1rem;
+                margin: 12px 0;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                border: none;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .download-btn:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 12px 32px rgba(52, 199, 89, 0.4);
+            }
+            
+            .reload-btn {
+                display: inline-block;
+                padding: 18px 28px;
+                background: linear-gradient(135deg, #ff3b30, #ff453a);
+                color: white;
+                border: none;
+                border-radius: 16px;
+                font-weight: 600;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+                margin-top: 20px;
+                position: relative;
+                z-index: 1;
+            }
+            
+            .reload-btn:hover {
+                transform: translateY(-4px);
+                box-shadow: 0 12px 32px rgba(255, 59, 48, 0.4);
+            }
+            
+            /* Animations */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            @keyframes fadeInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            @keyframes fadeInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
             }
             
             @keyframes spin {
@@ -198,219 +599,270 @@ app.get('/', (req, res) => {
                 100% { transform: rotate(360deg); }
             }
             
-            .features {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 16px;
-                margin-top: 32px;
-            }
-            
-            .feature {
-                background: rgba(255, 255, 255, 0.03);
-                border-radius: 16px;
-                padding: 24px 16px;
-                border: 1px solid rgba(255, 255, 255, 0.05);
-                transition: all 0.3s ease;
-            }
-            
-            .feature:hover {
-                background: rgba(255, 255, 255, 0.08);
-                transform: translateY(-2px);
-            }
-            
-            .feature-icon {
-                width: 32px;
-                height: 32px;
-                margin: 0 auto 16px;
-                background: linear-gradient(135deg, #007aff, #5856d6);
-                border-radius: 8px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-            }
-            
-            .feature-icon svg {
-                width: 18px;
-                height: 18px;
-                fill: #ffffff;
-            }
-            
-            .feature-title {
-                font-weight: 600;
-                font-size: 0.875rem;
-                margin-bottom: 4px;
-                color: #ffffff;
-            }
-            
-            .feature-desc {
-                font-size: 0.75rem;
-                color: #8e8e93;
-                line-height: 1.4;
-            }
-            
-            .shared-data {
-                background: rgba(52, 199, 89, 0.1);
-                border: 1px solid rgba(52, 199, 89, 0.2);
-                border-radius: 24px;
-                padding: 40px 32px;
-                margin-top: 32px;
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-            }
-            
-            .shared-data h3 {
-                color: #34c759;
-                margin-bottom: 24px;
-                font-size: 1.25rem;
-                font-weight: 600;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-            }
-            
-            .shared-data h3 svg {
-                width: 20px;
-                height: 20px;
-                fill: #34c759;
-            }
-            
-            .url-link {
-                display: inline-block;
-                padding: 16px 24px;
-                background: linear-gradient(135deg, #007aff, #5856d6);
-                color: white;
-                text-decoration: none;
-                border-radius: 12px;
-                font-weight: 600;
-                font-size: 0.9375rem;
-                margin: 12px 0;
-                word-break: break-all;
-                transition: all 0.3s ease;
-                border: none;
-                cursor: pointer;
-            }
-            
-            .url-link:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
-            }
-            
-            .file-image {
-                max-width: 100%;
-                max-height: 300px;
-                border-radius: 16px;
-                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-                margin: 16px 0;
-                border: 1px solid rgba(255, 255, 255, 0.1);
-            }
-            
-            .download-btn {
-                display: inline-block;
-                padding: 16px 24px;
-                background: linear-gradient(135deg, #34c759, #30d158);
-                color: white;
-                text-decoration: none;
-                border-radius: 12px;
-                font-weight: 600;
-                font-size: 0.9375rem;
-                margin: 12px 0;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                border: none;
-            }
-            
-            .download-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 24px rgba(52, 199, 89, 0.3);
-            }
-            
-            .reload-btn {
-                display: inline-block;
-                padding: 16px 24px;
-                background: linear-gradient(135deg, #ff3b30, #ff453a);
-                color: white;
-                border: none;
-                border-radius: 12px;
-                font-weight: 600;
-                font-size: 0.9375rem;
-                cursor: pointer;
-                transition: all 0.3s ease;
-                margin-top: 16px;
-            }
-            
-            .reload-btn:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 8px 24px rgba(255, 59, 48, 0.3);
-            }
-            
             .hidden {
                 display: none;
             }
             
-            @media (max-width: 480px) {
-                .container {
-                    width: 95%;
+            /* Animations */
+            @keyframes fadeInUp {
+                from {
+                    opacity: 0;
+                    transform: translateY(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            @keyframes fadeInLeft {
+                from {
+                    opacity: 0;
+                    transform: translateX(-30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            @keyframes fadeInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(30px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .main-content {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                }
+                
+                .hero {
+                    margin-bottom: 40px;
+                }
+                
+                .logo {
+                    font-size: 3rem;
+                }
+                
+                .tagline {
+                    font-size: 1.1rem;
                 }
                 
                 .qr-section {
-                    padding: 32px 24px;
+                    padding: 40px 30px;
                 }
                 
-                .features {
-                    grid-template-columns: 1fr;
-                    gap: 12px;
+                .qr-code {
+                    width: 180px;
+                    height: 180px;
                 }
                 
                 .feature {
+                    padding: 24px 20px;
+                }
+                
+                .feature-content {
+                    gap: 16px;
+                }
+                
+                .feature-icon {
+                    width: 40px;
+                    height: 40px;
+                }
+                
+                .feature-icon svg {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .container {
                     padding: 20px 16px;
+                }
+                
+                .logo {
+                    font-size: 2.5rem;
+                }
+                
+                .qr-section {
+                    padding: 30px 24px;
+                }
+                
+                .qr-code {
+                    width: 160px;
+                    height: 160px;
+                }
+            }
+            
+            /* Responsive Design */
+            @media (max-width: 768px) {
+                .main-content {
+                    grid-template-columns: 1fr;
+                    gap: 40px;
+                }
+                
+                .hero {
+                    margin-bottom: 40px;
+                }
+                
+                .logo {
+                    font-size: 3rem;
+                }
+                
+                .tagline {
+                    font-size: 1.1rem;
+                }
+                
+                .qr-section {
+                    padding: 40px 30px;
+                }
+                
+                .qr-code {
+                    width: 180px;
+                    height: 180px;
+                }
+                
+                .feature {
+                    padding: 24px 20px;
+                }
+                
+                .feature-content {
+                    gap: 16px;
+                }
+                
+                .feature-icon {
+                    width: 40px;
+                    height: 40px;
+                }
+                
+                .feature-icon svg {
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+            
+            @media (max-width: 480px) {
+                .container {
+                    padding: 20px 16px;
+                }
+                
+                .logo {
+                    font-size: 2.5rem;
+                }
+                
+                .qr-section {
+                    padding: 30px 24px;
+                }
+                
+                .qr-code {
+                    width: 160px;
+                    height: 160px;
                 }
             }
         </style>
     </head>
     <body>
+        <!-- Animated background particles -->
+        <div class="particles">
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+            <div class="particle"></div>
+        </div>
+        
         <div class="container">
-            <div class="logo">ZapKey</div>
-            <div class="tagline">Secure data sharing made simple</div>
+            <!-- Hero Section -->
+            <div class="hero">
+                <div class="logo">ZapKey</div>
+                <div class="tagline">Secure data sharing made simple</div>
+                <div class="subtitle">Transfer files, images, and links instantly across any device</div>
+            </div>
             
-            <div class="qr-section" id="qr-section">
-                <div class="qr-code" id="qr-code">
-                    <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #8e8e93;">
-                        Loading QR Code...
+            <!-- Main Content -->
+            <div class="main-content">
+                <!-- QR Section -->
+                <div class="qr-section" id="qr-section">
+                    <div class="qr-code" id="qr-code">
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #8e8e93;">
+                            Loading QR Code...
+                        </div>
+                    </div>
+                    <div class="qr-instructions">
+                        Scan this QR code with any device to share files, images, or URLs securely
                     </div>
                 </div>
-                <div class="qr-instructions">
-                    Scan this QR code with any device to share files, images, or URLs securely
+                
+                <!-- Features Section -->
+                <div class="features-section">
+                    <div class="features-title">Why Choose ZapKey?</div>
+                    <div class="features" id="features">
+                        <div class="feature">
+                            <div class="feature-content">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                                    </svg>
+                                </div>
+                                <div class="feature-text">
+                                    <div class="feature-title">Universal Compatibility</div>
+                                    <div class="feature-desc">Works seamlessly across phones, tablets, computers, and any device with a camera</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="feature">
+                            <div class="feature-content">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                                    </svg>
+                                </div>
+                                <div class="feature-text">
+                                    <div class="feature-title">Military-Grade Security</div>
+                                    <div class="feature-desc">End-to-end encrypted sharing with automatic data expiration for maximum privacy</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="feature">
+                            <div class="feature-content">
+                                <div class="feature-icon">
+                                    <svg viewBox="0 0 24 24">
+                                        <path d="M13 2.05v3.03c3.39.49 6 3.39 6 6.92 0 .9-.18 1.75-.5 2.54l2.6 1.53c.56-1.24.9-2.62.9-4.07 0-5.18-3.95-9.45-9-9.95zM12 19c-3.87 0-7-3.13-7-7 0-3.53 2.61-6.43 6-6.92V2.05c-5.05.5-9 4.76-9 9.95 0 5.52 4.47 10 9.99 10 3.31 0 6.24-1.61 8.06-4.09l-2.6-1.53C16.17 17.98 14.21 19 12 19z"/>
+                                    </svg>
+                                </div>
+                                <div class="feature-text">
+                                    <div class="feature-title">Lightning Fast</div>
+                                    <div class="feature-desc">Instant file transfer with real-time updates and no waiting time</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
+            <!-- Status Indicator -->
             <div class="status-indicator" id="status-indicator">
                 <div class="spinner"></div>
                 <span>Waiting for shared data...</span>
             </div>
             
+            <!-- Shared Data Section -->
             <div class="shared-data hidden" id="shared-data"></div>
-            
-            <div class="features" id="features">
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                        </svg>
-                    </div>
-                    <div class="feature-title">Any Device</div>
-                    <div class="feature-desc">Works on phones, tablets, computers</div>
-                </div>
-                <div class="feature">
-                    <div class="feature-icon">
-                        <svg viewBox="0 0 24 24">
-                            <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
-                        </svg>
-                    </div>
-                    <div class="feature-title">Secure</div>
-                    <div class="feature-desc">End-to-end encrypted sharing</div>
-                </div>
-            </div>
         </div>
         
         <script>
@@ -424,10 +876,10 @@ app.get('/', (req, res) => {
             
             // Generate QR code
             const qrImage = new Image();
-            qrImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(shareUrl);
+            qrImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' + encodeURIComponent(shareUrl);
             qrImage.style.width = '100%';
             qrImage.style.height = '100%';
-            qrImage.style.borderRadius = '12px';
+            qrImage.style.borderRadius = '16px';
             
             qrContainer.innerHTML = '';
             qrContainer.appendChild(qrImage);
@@ -502,7 +954,7 @@ app.get('/', (req, res) => {
                                             </svg>
                                             Shared File Received
                                         </h3>
-                                        <p style="color: #8e8e93; margin-bottom: 16px;"><strong>File:</strong> \${fileData.name}</p>
+                                        <p style="color: #a8a8a8; margin-bottom: 20px; font-size: 1.1rem;"><strong>File:</strong> \${fileData.name}</p>
                                         <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
                                             Download File
                                         </a>
@@ -563,20 +1015,59 @@ app.get('/share', (req, res) => {
             
             body {
                 font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-                background: #000000;
+                background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 25%, #0f0f23 50%, #1a1a1a 75%, #0c0c0c 100%);
                 color: #ffffff;
                 min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
                 overflow-x: hidden;
+                position: relative;
+            }
+            
+            /* Animated background particles */
+            .particles {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                pointer-events: none;
+                z-index: 1;
+            }
+            
+            .particle {
+                position: absolute;
+                width: 2px;
+                height: 2px;
+                background: rgba(255, 255, 255, 0.1);
+                border-radius: 50%;
+                animation: float 6s ease-in-out infinite;
+            }
+            
+            .particle:nth-child(1) { left: 10%; animation-delay: 0s; }
+            .particle:nth-child(2) { left: 20%; animation-delay: 1s; }
+            .particle:nth-child(3) { left: 30%; animation-delay: 2s; }
+            .particle:nth-child(4) { left: 40%; animation-delay: 3s; }
+            .particle:nth-child(5) { left: 50%; animation-delay: 4s; }
+            .particle:nth-child(6) { left: 60%; animation-delay: 5s; }
+            .particle:nth-child(7) { left: 70%; animation-delay: 0.5s; }
+            .particle:nth-child(8) { left: 80%; animation-delay: 1.5s; }
+            .particle:nth-child(9) { left: 90%; animation-delay: 2.5s; }
+            
+            @keyframes float {
+                0%, 100% { transform: translateY(0px) rotate(0deg); opacity: 0; }
+                50% { transform: translateY(-100px) rotate(180deg); opacity: 1; }
             }
             
             .container {
-                max-width: 480px;
-                width: 90%;
-                text-align: center;
                 position: relative;
+                z-index: 2;
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 40px 20px;
+                min-height: 100vh;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
             }
             
             .header {
