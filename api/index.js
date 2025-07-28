@@ -1259,23 +1259,66 @@ app.get('/share', (req, res) => {
                 fill: currentColor;
             }
             
+            .paste-url-btn {
+                width: 100%;
+                padding: 12px 16px;
+                background: transparent;
+                color: rgba(255, 255, 255, 0.6);
+                border: 1px solid rgba(255, 255, 255, 0.3);
+                border-radius: 8px;
+                font-size: 0.875rem;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-family: inherit;
+                margin-top: 8px;
+                opacity: 0.7;
+            }
+            
+            .paste-url-btn:hover {
+                opacity: 1;
+                border-color: rgba(255, 255, 255, 0.5);
+                background: rgba(255, 255, 255, 0.05);
+            }
+            
             .submit-btn {
                 width: 100%;
                 padding: 18px;
-                background: linear-gradient(135deg, #007aff, #5856d6);
+                background: rgba(255, 255, 255, 0.1);
                 color: white;
-                border: none;
+                border: 1px solid rgba(255, 255, 255, 0.2);
                 border-radius: 12px;
                 font-size: 1rem;
                 font-weight: 600;
                 cursor: pointer;
                 transition: all 0.3s ease;
                 font-family: inherit;
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .submit-btn::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+                transition: left 0.5s ease;
             }
             
             .submit-btn:hover {
                 transform: translateY(-2px);
-                box-shadow: 0 8px 24px rgba(0, 122, 255, 0.3);
+                background: rgba(255, 255, 255, 0.15);
+                border-color: rgba(255, 255, 255, 0.3);
+                box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+            }
+            
+            .submit-btn:hover::before {
+                left: 100%;
             }
             
             .submit-btn:disabled {
@@ -1283,6 +1326,30 @@ app.get('/share', (req, res) => {
                 cursor: not-allowed;
                 transform: none;
                 box-shadow: none;
+            }
+            
+            .submit-btn.loading {
+                background: rgba(255, 255, 255, 0.05);
+                border-color: rgba(255, 255, 255, 0.1);
+            }
+            
+            .submit-btn.loading::after {
+                content: '';
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                width: 20px;
+                height: 20px;
+                margin: -10px 0 0 -10px;
+                border: 2px solid rgba(255, 255, 255, 0.3);
+                border-top: 2px solid white;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
             }
             
             .success-message {
@@ -1358,7 +1425,13 @@ app.get('/share', (req, res) => {
                     
                     <div class="form-group">
                         <label class="form-label">Share a URL</label>
-                        <input type="url" name="url" class="form-input" placeholder="https://example.com">
+                        <input type="url" name="url" class="form-input" id="url-input" placeholder="https://example.com">
+                        <button type="button" class="paste-url-btn" id="paste-url-btn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                <path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/>
+                            </svg>
+                            Paste Last Copied URL
+                        </button>
                     </div>
                     
                     <div class="or-divider">OR</div>
@@ -1387,6 +1460,38 @@ app.get('/share', (req, res) => {
             const fileInput = document.getElementById('file-input');
             const fileLabel = document.getElementById('file-label');
             const submitBtn = document.getElementById('submit-btn');
+            const urlInput = document.getElementById('url-input');
+            const pasteUrlBtn = document.getElementById('paste-url-btn');
+            
+            // Paste URL functionality
+            pasteUrlBtn.addEventListener('click', async () => {
+                try {
+                    const text = await navigator.clipboard.readText();
+                    if (text && (text.startsWith('http://') || text.startsWith('https://'))) {
+                        urlInput.value = text;
+                        pasteUrlBtn.style.opacity = '0.3';
+                        pasteUrlBtn.textContent = 'URL Pasted!';
+                        setTimeout(() => {
+                            pasteUrlBtn.style.opacity = '0.7';
+                            pasteUrlBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>Paste Last Copied URL';
+                        }, 2000);
+                    } else {
+                        pasteUrlBtn.textContent = 'No valid URL in clipboard';
+                        pasteUrlBtn.style.color = '#ff3b30';
+                        setTimeout(() => {
+                            pasteUrlBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>Paste Last Copied URL';
+                            pasteUrlBtn.style.color = 'rgba(255, 255, 255, 0.6)';
+                        }, 2000);
+                    }
+                } catch (error) {
+                    pasteUrlBtn.textContent = 'Clipboard access denied';
+                    pasteUrlBtn.style.color = '#ff3b30';
+                    setTimeout(() => {
+                        pasteUrlBtn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;"><path d="M19 3h-4.18C14.4 1.84 13.3 1 12 1c-1.3 0-2.4.84-2.82 2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 0c.55 0 1 .45 1 1s-.45 1-1 1-1-.45-1-1 .45-1 1-1zm2 14H7v-2h7v2zm3-4H7v-2h10v2zm0-4H7V7h10v2z"/></svg>Paste Last Copied URL';
+                        pasteUrlBtn.style.color = 'rgba(255, 255, 255, 0.6)';
+                    }, 2000);
+                }
+            });
             
             // File input handling
             fileInput.addEventListener('change', (e) => {
@@ -1434,7 +1539,8 @@ app.get('/share', (req, res) => {
                 
                 const formData = new FormData(form);
                 submitBtn.disabled = true;
-                submitBtn.textContent = 'Sharing...';
+                submitBtn.classList.add('loading');
+                submitBtn.textContent = '';
                 
                 try {
                     const response = await fetch('/share', {
@@ -1450,6 +1556,10 @@ app.get('/share', (req, res) => {
                     }
                 } catch (error) {
                     form.innerHTML = '<div class="error-message">Network error. Please try again.</div>';
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.classList.remove('loading');
+                    submitBtn.textContent = 'Share Data';
                 }
             });
         </script>
