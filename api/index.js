@@ -934,40 +934,49 @@ app.get('/', (req, res) => {
                                 \`;
                             } else if (data.data.files && data.data.files.length > 0) {
                                 const files = data.data.files;
-                                let filesHtml = '';
+                                let tableRows = '';
                                 
                                 files.forEach((fileData, index) => {
                                     const dataUrl = \`data:\${fileData.type};base64,\${fileData.data}\`;
+                                    const fileSize = (fileData.data.length * 0.75 / 1024 / 1024).toFixed(2); // Approximate size in MB
                                     
                                     if (fileData.type.startsWith('image/')) {
-                                        filesHtml += \`
-                                            <div style="margin-bottom: 30px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
-                                                <h4 style="margin-bottom: 15px; color: #007aff;">
-                                                    <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
-                                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
-                                                    </svg>
-                                                    Image \${index + 1}: \${fileData.name}
-                                                </h4>
-                                                <img src="\${dataUrl}" alt="Shared Image" class="file-image" style="max-width: 100%; border-radius: 8px;">
-                                                <br><br>
-                                                <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
-                                                    Download Image
-                                                </a>
-                                            </div>
+                                        tableRows += \`
+                                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                                <td style="padding: 15px; text-align: center; width: 80px;">
+                                                    <img src="\${dataUrl}" alt="Thumbnail" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.2);">
+                                                </td>
+                                                <td style="padding: 15px; color: #ffffff; font-weight: 500;">\${fileData.name}</td>
+                                                <td style="padding: 15px; color: #a8a8a8; text-align: center;">\${fileSize} MB</td>
+                                                <td style="padding: 15px; text-align: center;">
+                                                    <a href="\${dataUrl}" download="\${fileData.name}" style="display: inline-block; padding: 8px 12px; background: linear-gradient(135deg, #28a745, #20c997); color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem;">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; vertical-align: middle;">
+                                                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                                        </svg>
+                                                        Download
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         \`;
                                     } else {
-                                        filesHtml += \`
-                                            <div style="margin-bottom: 20px; padding: 15px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
-                                                <h4 style="margin-bottom: 10px; color: #007aff;">
-                                                    <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+                                        tableRows += \`
+                                            <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                                                <td style="padding: 15px; text-align: center; width: 80px;">
+                                                    <svg viewBox="0 0 24 24" style="width: 50px; height: 50px; color: #007aff;">
                                                         <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
                                                     </svg>
-                                                    File \${index + 1}: \${fileData.name}
-                                                </h4>
-                                                <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
-                                                    Download File
-                                                </a>
-                                            </div>
+                                                </td>
+                                                <td style="padding: 15px; color: #ffffff; font-weight: 500;">\${fileData.name}</td>
+                                                <td style="padding: 15px; color: #a8a8a8; text-align: center;">\${fileSize} MB</td>
+                                                <td style="padding: 15px; text-align: center;">
+                                                    <a href="\${dataUrl}" download="\${fileData.name}" style="display: inline-block; padding: 8px 12px; background: linear-gradient(135deg, #28a745, #20c997); color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem;">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; vertical-align: middle;">
+                                                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                                        </svg>
+                                                        Download
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         \`;
                                     }
                                 });
@@ -979,7 +988,21 @@ app.get('/', (req, res) => {
                                         </svg>
                                         Shared Files Received (\${files.length} files)
                                     </h3>
-                                    \${filesHtml}
+                                    <div style="overflow-x: auto; margin: 20px 0;">
+                                        <table style="width: 100%; border-collapse: collapse; background: rgba(255, 255, 255, 0.02); border-radius: 12px; overflow: hidden;">
+                                            <thead>
+                                                <tr style="background: rgba(255, 255, 255, 0.05);">
+                                                    <th style="padding: 15px; text-align: center; color: #007aff; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Preview</th>
+                                                    <th style="padding: 15px; text-align: left; color: #007aff; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">File Name</th>
+                                                    <th style="padding: 15px; text-align: center; color: #007aff; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Size</th>
+                                                    <th style="padding: 15px; text-align: center; color: #007aff; font-weight: 600; border-bottom: 1px solid rgba(255, 255, 255, 0.1);">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                \${tableRows}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                     <button onclick="location.reload()" class="reload-btn">
                                         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
                                             <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
@@ -1558,37 +1581,70 @@ app.get('/receive', (req, res) => {
                                 \`;
                             } else if (data.data.files && data.data.files.length > 0) {
                                 const files = data.data.files;
-                                let filesHtml = '';
+                                let tableRows = '';
                                 
                                 files.forEach((fileData, index) => {
                                     const dataUrl = \`data:\${fileData.type};base64,\${fileData.data}\`;
+                                    const fileSize = (fileData.data.length * 0.75 / 1024 / 1024).toFixed(2); // Approximate size in MB
                                     
                                     if (fileData.type.startsWith('image/')) {
-                                        filesHtml += \`
-                                            <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f9f9f9;">
-                                                <h4 style="margin-bottom: 10px; color: #007aff;">Image \${index + 1}: \${fileData.name}</h4>
-                                                <img src="\${dataUrl}" alt="Shared Image" class="file-image" style="max-width: 100%; border-radius: 4px;">
-                                                <br><br>
-                                                <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
-                                                    Download Image
-                                                </a>
-                                            </div>
+                                        tableRows += \`
+                                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                                <td style="padding: 15px; text-align: center; width: 80px;">
+                                                    <img src="\${dataUrl}" alt="Thumbnail" style="width: 50px; height: 50px; object-fit: cover; border-radius: 6px; border: 1px solid #ddd;">
+                                                </td>
+                                                <td style="padding: 15px; color: #333; font-weight: 500;">\${fileData.name}</td>
+                                                <td style="padding: 15px; color: #666; text-align: center;">\${fileSize} MB</td>
+                                                <td style="padding: 15px; text-align: center;">
+                                                    <a href="\${dataUrl}" download="\${fileData.name}" style="display: inline-block; padding: 8px 12px; background: linear-gradient(135deg, #28a745, #20c997); color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem;">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; vertical-align: middle;">
+                                                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                                        </svg>
+                                                        Download
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         \`;
                                     } else {
-                                        filesHtml += \`
-                                            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f9f9f9;">
-                                                <h4 style="margin-bottom: 8px; color: #007aff;">File \${index + 1}: \${fileData.name}</h4>
-                                                <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
-                                                    Download File
-                                                </a>
-                                            </div>
+                                        tableRows += \`
+                                            <tr style="border-bottom: 1px solid #e0e0e0;">
+                                                <td style="padding: 15px; text-align: center; width: 80px;">
+                                                    <svg viewBox="0 0 24 24" style="width: 50px; height: 50px; color: #007aff;">
+                                                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                                    </svg>
+                                                </td>
+                                                <td style="padding: 15px; color: #333; font-weight: 500;">\${fileData.name}</td>
+                                                <td style="padding: 15px; color: #666; text-align: center;">\${fileSize} MB</td>
+                                                <td style="padding: 15px; text-align: center;">
+                                                    <a href="\${dataUrl}" download="\${fileData.name}" style="display: inline-block; padding: 8px 12px; background: linear-gradient(135deg, #28a745, #20c997); color: white; text-decoration: none; border-radius: 6px; font-size: 0.9rem;">
+                                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 4px; vertical-align: middle;">
+                                                            <path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/>
+                                                        </svg>
+                                                        Download
+                                                    </a>
+                                                </td>
+                                            </tr>
                                         \`;
                                     }
                                 });
                                 
                                 content.innerHTML = \`
                                     <h3>Shared Files (\${files.length} files)</h3>
-                                    \${filesHtml}
+                                    <div style="overflow-x: auto; margin: 20px 0;">
+                                        <table style="width: 100%; border-collapse: collapse; background: #f9f9f9; border-radius: 8px; overflow: hidden; border: 1px solid #e0e0e0;">
+                                            <thead>
+                                                <tr style="background: #f0f0f0;">
+                                                    <th style="padding: 15px; text-align: center; color: #007aff; font-weight: 600; border-bottom: 1px solid #e0e0e0;">Preview</th>
+                                                    <th style="padding: 15px; text-align: left; color: #007aff; font-weight: 600; border-bottom: 1px solid #e0e0e0;">File Name</th>
+                                                    <th style="padding: 15px; text-align: center; color: #007aff; font-weight: 600; border-bottom: 1px solid #e0e0e0;">Size</th>
+                                                    <th style="padding: 15px; text-align: center; color: #007aff; font-weight: 600; border-bottom: 1px solid #e0e0e0;">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                \${tableRows}
+                                            </tbody>
+                                        </table>
+                                    </div>
                                 \`;
                             } else if (data.data.file) {
                                 const fileData = data.data.file;
