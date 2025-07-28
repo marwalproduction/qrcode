@@ -125,7 +125,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           -webkit-text-fill-color: transparent;
         }
         .msg {
-          width: 100%;
+          width: -webkit-fill-available;
           margin-bottom: 18px;
           padding: 12px 16px;
           border-radius: 10px;
@@ -144,7 +144,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           border: 1px solid #00e07a;
         }
         input[type="url"] {
-          width: 100%;
+          width: -webkit-fill-available;
           padding: 12px 16px;
           font-size: 1rem;
           border: 1px solid #444;
@@ -626,37 +626,14 @@ router.get('/', async (req, res) => {
           vertical-align: middle;
         }
         @media (max-width: 600px) {
-          .container, .hero-section {
+          .container {
             padding: 0 4vw;
             max-width: 99vw;
           }
-          .main-content {
-            padding: 0;
-          }
-          .hero-headline {
-            font-size: 1.4rem;
-          }
-          .hero-subheadline {
-            font-size: 0.98rem;
-          }
-          .preview-item img {
-            max-width: 70vw;
-            max-height: 60vw;
-          }
-          .upload-icon svg {
-            height: 36px;
-          }
-          .footer {
-            font-size: 0.98rem;
-            padding: 18px 0 10px 0;
-          }
           .qr-img {
-            width: 180px !important;
-            height: 180px !important;
-            min-width: 120px;
-            min-height: 120px;
-            max-width: 90vw;
-            max-height: 90vw;
+            width: 110px;
+            height: 110px;
+            padding: 6px;
           }
         }
       </style>
@@ -853,8 +830,7 @@ router.get('/', async (req, res) => {
 });
 
 // Serve the share page (GET)
-router.get('/', (req, res) => {
-  console.log('Share GET endpoint hit with sid:', req.query.sid);
+router.get('/share', (req, res) => {
   const { sid, msg, type, url } = req.query;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error' }));
@@ -863,8 +839,7 @@ router.get('/', (req, res) => {
 });
 
 // Handle form submission (POST)
-router.post('/', upload.array('image'), (req, res) => {
-  console.log('Share POST endpoint hit with sid:', req.body.sid);
+router.post('/share', upload.array('image'), (req, res) => {
   const { sid, url } = req.body;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', urlValue: url }));
@@ -872,38 +847,29 @@ router.post('/', upload.array('image'), (req, res) => {
   let shared = {};
   if (url && url.startsWith('http')) {
     shared.url = url;
-    console.log('Storing URL for sid:', sid, 'url:', url);
   }
   if (req.files && req.files.length > 0) {
     // Store images as base64 (for demo, not for production)
     shared.images = req.files.map(f => `data:${f.mimetype};base64,${f.buffer.toString('base64')}`);
     totalFilesShared.count += req.files.length;
-    console.log('Storing', req.files.length, 'images for sid:', sid);
   }
   if (!shared.url && (!shared.images || shared.images.length === 0)) {
     return res.status(400).send(renderSharePage({ sid, message: 'Please provide a valid URL or upload an image.', messageType: 'error', urlValue: url }));
   }
   createSession(sid, shared);
-  console.log('Session created for sid:', sid, 'with data type:', shared.url ? 'url' : 'images');
   // Show success message on same page
   res.send(renderSharePage({ sid, message: 'Shared successfully! You can close this page.', messageType: 'success', urlValue: '' }));
 });
 
 // API for extension to poll for shared data
 router.get('/poll', (req, res) => {
-  console.log('Share poll endpoint hit with sid:', req.query.sid);
   const { sid } = req.query;
   if (!sid) return res.status(400).json({ error: 'Missing sid' });
   const shared = getSession(sid);
-  if (!shared) {
-    console.log('No shared data found for sid:', sid);
-    return res.json({ status: 'waiting' });
-  }
-  console.log('Found shared data for sid:', sid, 'type:', shared.url ? 'url' : 'image');
+  if (!shared) return res.json({ status: 'waiting' });
   // One-time use: clear after sending
   // The session will be cleaned up by the periodic cleanup
   res.json({ status: 'ready', shared });
 });
 
 module.exports = router; 
-
