@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Multer for file uploads
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB limit
+const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB limit per file
 
 // In-memory stores
 const sessions = new Map();
@@ -932,6 +932,61 @@ app.get('/', (req, res) => {
                                         Reload to receive more
                                     </button>
                                 \`;
+                            } else if (data.data.files && data.data.files.length > 0) {
+                                const files = data.data.files;
+                                let filesHtml = '';
+                                
+                                files.forEach((fileData, index) => {
+                                    const dataUrl = \`data:\${fileData.type};base64,\${fileData.data}\`;
+                                    
+                                    if (fileData.type.startsWith('image/')) {
+                                        filesHtml += \`
+                                            <div style="margin-bottom: 30px; padding: 20px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
+                                                <h4 style="margin-bottom: 15px; color: #007aff;">
+                                                    <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+                                                        <path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/>
+                                                    </svg>
+                                                    Image \${index + 1}: \${fileData.name}
+                                                </h4>
+                                                <img src="\${dataUrl}" alt="Shared Image" class="file-image" style="max-width: 100%; border-radius: 8px;">
+                                                <br><br>
+                                                <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
+                                                    Download Image
+                                                </a>
+                                            </div>
+                                        \`;
+                                    } else {
+                                        filesHtml += \`
+                                            <div style="margin-bottom: 20px; padding: 15px; border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; background: rgba(255, 255, 255, 0.02);">
+                                                <h4 style="margin-bottom: 10px; color: #007aff;">
+                                                    <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 8px;">
+                                                        <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                                    </svg>
+                                                    File \${index + 1}: \${fileData.name}
+                                                </h4>
+                                                <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
+                                                    Download File
+                                                </a>
+                                            </div>
+                                        \`;
+                                    }
+                                });
+                                
+                                sharedData.innerHTML = \`
+                                    <h3>
+                                        <svg viewBox="0 0 24 24">
+                                            <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
+                                        </svg>
+                                        Shared Files Received (\${files.length} files)
+                                    </h3>
+                                    \${filesHtml}
+                                    <button onclick="location.reload()" class="reload-btn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                        </svg>
+                                        Reload to receive more
+                                    </button>
+                                \`;
                             } else if (data.data.file) {
                                 const fileData = data.data.file;
                                 const dataUrl = \`data:\${fileData.type};base64,\${fileData.data}\`;
@@ -1286,14 +1341,15 @@ app.get('/share', (req, res) => {
                     <div class="or-divider">OR</div>
                     
                     <div class="form-group">
-                        <label class="form-label">Upload Image/File</label>
-                        <input type="file" name="file" class="file-input" id="file-input" accept="image/*">
+                        <label class="form-label">Upload Files (up to 5 files)</label>
+                        <input type="file" name="files" class="file-input" id="file-input" accept="*/*" multiple>
                         <label for="file-input" class="file-label" id="file-label">
                             <svg viewBox="0 0 24 24">
                                 <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                             </svg>
-                            <div>Choose a file or drag it here</div>
+                            <div>Choose files or drag them here (max 5 files)</div>
                         </label>
+                        <div id="file-list" style="margin-top: 10px; text-align: left;"></div>
                     </div>
                     
                     <button type="submit" class="submit-btn" id="submit-btn">
@@ -1311,25 +1367,41 @@ app.get('/share', (req, res) => {
             
             // File input handling
             fileInput.addEventListener('change', (e) => {
-                const file = e.target.files[0];
-                if (file) {
+                const files = Array.from(e.target.files);
+                const fileList = document.getElementById('file-list');
+                
+                if (files.length > 0) {
+                    // Limit to 5 files
+                    const selectedFiles = files.slice(0, 5);
+                    
                     fileLabel.innerHTML = \`
                         <svg viewBox="0 0 24 24">
                             <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
                         </svg>
-                        <div>\${file.name}</div>
+                        <div>\${selectedFiles.length} file(s) selected</div>
                     \`;
                     fileLabel.style.color = '#007aff';
                     fileLabel.style.borderColor = '#007aff';
+                    
+                    // Display file list
+                    fileList.innerHTML = selectedFiles.map(file => 
+                        \`<div style="color: #007aff; font-size: 0.875rem; margin: 5px 0;">• \${file.name} (\${(file.size / 1024 / 1024).toFixed(2)} MB)</div>\`
+                    ).join('');
+                    
+                    // Update the file input to only include selected files
+                    const dt = new DataTransfer();
+                    selectedFiles.forEach(file => dt.items.add(file));
+                    fileInput.files = dt.files;
                 } else {
                     fileLabel.innerHTML = \`
                         <svg viewBox="0 0 24 24">
                             <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
                         </svg>
-                        <div>Choose a file or drag it here</div>
+                        <div>Choose files or drag them here (max 5 files)</div>
                     \`;
                     fileLabel.style.color = '#8e8e93';
                     fileLabel.style.borderColor = 'rgba(255, 255, 255, 0.3)';
+                    fileList.innerHTML = '';
                 }
             });
             
@@ -1484,6 +1556,40 @@ app.get('/receive', (req, res) => {
                                         Open Link
                                     </a>
                                 \`;
+                            } else if (data.data.files && data.data.files.length > 0) {
+                                const files = data.data.files;
+                                let filesHtml = '';
+                                
+                                files.forEach((fileData, index) => {
+                                    const dataUrl = \`data:\${fileData.type};base64,\${fileData.data}\`;
+                                    
+                                    if (fileData.type.startsWith('image/')) {
+                                        filesHtml += \`
+                                            <div style="margin-bottom: 20px; padding: 15px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f9f9f9;">
+                                                <h4 style="margin-bottom: 10px; color: #007aff;">Image \${index + 1}: \${fileData.name}</h4>
+                                                <img src="\${dataUrl}" alt="Shared Image" class="file-image" style="max-width: 100%; border-radius: 4px;">
+                                                <br><br>
+                                                <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
+                                                    Download Image
+                                                </a>
+                                            </div>
+                                        \`;
+                                    } else {
+                                        filesHtml += \`
+                                            <div style="margin-bottom: 15px; padding: 10px; border: 1px solid #e0e0e0; border-radius: 8px; background: #f9f9f9;">
+                                                <h4 style="margin-bottom: 8px; color: #007aff;">File \${index + 1}: \${fileData.name}</h4>
+                                                <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
+                                                    Download File
+                                                </a>
+                                            </div>
+                                        \`;
+                                    }
+                                });
+                                
+                                content.innerHTML = \`
+                                    <h3>Shared Files (\${files.length} files)</h3>
+                                    \${filesHtml}
+                                \`;
                             } else if (data.data.file) {
                                 const fileData = data.data.file;
                                 const dataUrl = \`data:\${fileData.type};base64,\${fileData.data}\`;
@@ -1535,7 +1641,7 @@ app.post('/api/sessions', (req, res) => {
   res.json({ success: true });
 });
 
-app.post('/share', upload.single('file'), (req, res) => {
+app.post('/share', upload.array('files', 5), (req, res) => {
   const { sid, url } = req.body;
   
   if (!sid) {
@@ -1548,16 +1654,16 @@ app.post('/share', upload.single('file'), (req, res) => {
     sharedData.url = url;
   }
   
-  if (req.file) {
-    sharedData.file = {
-      name: req.file.originalname,
-      type: req.file.mimetype,
-      data: req.file.buffer.toString('base64')
-    };
+  if (req.files && req.files.length > 0) {
+    sharedData.files = req.files.map(file => ({
+      name: file.originalname,
+      type: file.mimetype,
+      data: file.buffer.toString('base64')
+    }));
   }
   
-  if (!sharedData.url && !sharedData.file) {
-    return res.status(400).send('Please provide a URL or upload a file');
+  if (!sharedData.url && !sharedData.files) {
+    return res.status(400).send('Please provide a URL or upload at least one file');
   }
   
   createSharedData(sid, sharedData);
