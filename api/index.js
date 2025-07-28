@@ -266,6 +266,24 @@ app.get('/', (req, res) => {
             .hidden {
                 display: none;
             }
+            
+            .reload-btn {
+                display: inline-block;
+                padding: 12px 24px;
+                background: linear-gradient(135deg, #ff6b6b, #ee5a24);
+                color: white;
+                border: none;
+                border-radius: 10px;
+                font-weight: 600;
+                font-size: 1rem;
+                cursor: pointer;
+                transition: transform 0.2s;
+                margin-top: 10px;
+            }
+            
+            .reload-btn:hover {
+                transform: translateY(-2px);
+            }
         </style>
     </head>
     <body>
@@ -338,8 +356,9 @@ app.get('/', (req, res) => {
                     .then(response => response.json())
                     .then(data => {
                         if (data.status === 'ready') {
-                            // Hide loading indicator
+                            // Hide loading indicator and QR container
                             loadingIndicator.classList.add('hidden');
+                            qrContainer.classList.add('hidden');
                             
                             // Show shared data
                             sharedData.classList.remove('hidden');
@@ -354,6 +373,10 @@ app.get('/', (req, res) => {
                                     <a href="\${data.data.url}" target="_blank" class="download-btn">
                                         🔗 Open Link
                                     </a>
+                                    <br><br>
+                                    <button onclick="location.reload()" class="reload-btn">
+                                        🔄 Reload to receive more
+                                    </button>
                                 \`;
                             } else if (data.data.file) {
                                 const fileData = data.data.file;
@@ -367,6 +390,10 @@ app.get('/', (req, res) => {
                                         <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
                                             💾 Download Image
                                         </a>
+                                        <br><br>
+                                        <button onclick="location.reload()" class="reload-btn">
+                                            🔄 Reload to receive more
+                                        </button>
                                     \`;
                                 } else {
                                     sharedData.innerHTML = \`
@@ -375,6 +402,10 @@ app.get('/', (req, res) => {
                                         <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
                                             💾 Download File
                                         </a>
+                                        <br><br>
+                                        <button onclick="location.reload()" class="reload-btn">
+                                            🔄 Reload to receive more
+                                        </button>
                                     \`;
                                 }
                             }
