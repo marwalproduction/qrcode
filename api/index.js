@@ -820,7 +820,6 @@ app.get('/', (req, res) => {
                 
                 <!-- Features Section -->
                 <div class="features-section">
-                    <div class="features-title">Why Choose ZapKey?</div>
                     <div class="features" id="features">
                         <div class="feature">
                             <div class="feature-content">
@@ -947,6 +946,10 @@ app.get('/', (req, res) => {
                                         <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
                                             Download Image
                                         </a>
+                                        <br>
+                                        <button onclick="downloadImage('\${dataUrl}', '\${fileData.name}')" class="download-btn" style="background: linear-gradient(135deg, #ff9500, #ff6b35); margin-top: 10px;">
+                                            Download Image (Alternative)
+                                        </button>
                                         <br><br>
                                         <button onclick="location.reload()" class="reload-btn">
                                             Reload to receive more
@@ -988,6 +991,16 @@ app.get('/', (req, res) => {
             
             // Start polling after a short delay
             setTimeout(pollForData, 1000);
+            
+            // Function to download image
+            function downloadImage(dataUrl, fileName) {
+                const link = document.createElement('a');
+                link.href = dataUrl;
+                link.download = fileName;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            }
         </script>
     </body>
     </html>
