@@ -9,9 +9,9 @@ const QRCode = require('qrcode');
 const app = express();
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const shareRouter = require('./share');
-app.use('/', shareRouter);
 app.use('/share', shareRouter);
 
 // In-memory store: sid -> { qrData }
