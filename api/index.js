@@ -111,7 +111,7 @@ app.get('/', (req, res) => {
                 padding: 40px;
                 box-shadow: 0 20px 40px rgba(0,0,0,0.1);
                 text-align: center;
-                max-width: 400px;
+                max-width: 500px;
                 width: 90%;
             }
             
@@ -182,6 +182,90 @@ app.get('/', (req, res) => {
                 font-size: 0.8rem;
                 color: #666;
             }
+            
+            /* Shared data styles */
+            .shared-data {
+                background: #f8f9fa;
+                border-radius: 15px;
+                padding: 30px;
+                margin-top: 30px;
+                border: 2px solid #28a745;
+            }
+            
+            .shared-data h3 {
+                color: #28a745;
+                margin-bottom: 20px;
+                font-size: 1.3rem;
+            }
+            
+            .url-link {
+                display: inline-block;
+                padding: 12px 24px;
+                background: linear-gradient(135deg, #667eea, #764ba2);
+                color: white;
+                text-decoration: none;
+                border-radius: 10px;
+                font-weight: 600;
+                margin: 10px 0;
+                word-break: break-all;
+                transition: transform 0.2s;
+            }
+            
+            .url-link:hover {
+                transform: translateY(-2px);
+            }
+            
+            .file-image {
+                max-width: 100%;
+                max-height: 300px;
+                border-radius: 10px;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+                margin: 15px 0;
+            }
+            
+            .download-btn {
+                display: inline-block;
+                padding: 12px 24px;
+                background: linear-gradient(135deg, #28a745, #20c997);
+                color: white;
+                text-decoration: none;
+                border-radius: 10px;
+                font-weight: 600;
+                margin: 10px 0;
+                cursor: pointer;
+                transition: transform 0.2s;
+            }
+            
+            .download-btn:hover {
+                transform: translateY(-2px);
+            }
+            
+            .loading-indicator {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+                color: #666;
+                margin-top: 20px;
+            }
+            
+            .spinner {
+                width: 20px;
+                height: 20px;
+                border: 2px solid #f3f3f3;
+                border-top: 2px solid #667eea;
+                border-radius: 50%;
+                animation: spin 1s linear infinite;
+            }
+            
+            @keyframes spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+            
+            .hidden {
+                display: none;
+            }
         </style>
     </head>
     <body>
@@ -189,7 +273,7 @@ app.get('/', (req, res) => {
             <div class="logo">ZapKey</div>
             <div class="tagline">Secure data sharing made simple</div>
             
-            <div class="qr-container">
+            <div class="qr-container" id="qr-container">
                 <div class="qr-code" id="qr-code">
                     <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999;">
                         Loading QR Code...
@@ -200,7 +284,16 @@ app.get('/', (req, res) => {
                 </div>
             </div>
             
-            <div class="features">
+            <!-- Loading indicator for shared data -->
+            <div class="loading-indicator" id="loading-indicator">
+                <div class="spinner"></div>
+                <span>Waiting for shared data...</span>
+            </div>
+            
+            <!-- Shared data container -->
+            <div class="shared-data hidden" id="shared-data"></div>
+            
+            <div class="features" id="features">
                 <div class="feature">
                     <div class="feature-icon">📱</div>
                     <div class="feature-title">Any Device</div>
@@ -215,11 +308,14 @@ app.get('/', (req, res) => {
         </div>
         
         <script>
-            // Generate QR code
+            const sid = '${sid}';
             const shareUrl = '${shareUrl}';
             const qrContainer = document.getElementById('qr-code');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const sharedData = document.getElementById('shared-data');
+            const features = document.getElementById('features');
             
-            // Create QR code using a simple library or service
+            // Generate QR code
             const qrImage = new Image();
             qrImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=' + encodeURIComponent(shareUrl);
             qrImage.style.width = '100%';
@@ -233,8 +329,72 @@ app.get('/', (req, res) => {
             fetch('/api/sessions', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ sid: '${sid}', url: window.location.href })
+                body: JSON.stringify({ sid: sid, url: window.location.href })
             });
+            
+            // Poll for shared data
+            function pollForData() {
+                fetch('/poll?sid=' + sid)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === 'ready') {
+                            // Hide loading indicator
+                            loadingIndicator.classList.add('hidden');
+                            
+                            // Show shared data
+                            sharedData.classList.remove('hidden');
+                            
+                            if (data.data.url) {
+                                sharedData.innerHTML = \`
+                                    <h3>📎 Shared URL Received!</h3>
+                                    <a href="\${data.data.url}" target="_blank" class="url-link">
+                                        \${data.data.url}
+                                    </a>
+                                    <br>
+                                    <a href="\${data.data.url}" target="_blank" class="download-btn">
+                                        🔗 Open Link
+                                    </a>
+                                \`;
+                            } else if (data.data.file) {
+                                const fileData = data.data.file;
+                                const dataUrl = \`data:\${fileData.type};base64,\${fileData.data}\`;
+                                
+                                if (fileData.type.startsWith('image/')) {
+                                    sharedData.innerHTML = \`
+                                        <h3>🖼️ Shared Image Received!</h3>
+                                        <img src="\${dataUrl}" alt="Shared Image" class="file-image">
+                                        <br>
+                                        <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
+                                            💾 Download Image
+                                        </a>
+                                    \`;
+                                } else {
+                                    sharedData.innerHTML = \`
+                                        <h3>📁 Shared File Received!</h3>
+                                        <p><strong>File:</strong> \${fileData.name}</p>
+                                        <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
+                                            💾 Download File
+                                        </a>
+                                    \`;
+                                }
+                            }
+                            
+                            // Hide features when data is received
+                            features.classList.add('hidden');
+                            
+                        } else {
+                            // Continue polling
+                            setTimeout(pollForData, 2000);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Polling error:', error);
+                        setTimeout(pollForData, 2000);
+                    });
+            }
+            
+            // Start polling after a short delay
+            setTimeout(pollForData, 1000);
         </script>
     </body>
     </html>
