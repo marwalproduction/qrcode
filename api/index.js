@@ -11,7 +11,6 @@ app.use(cors());
 app.use(bodyParser.json());
 
 const shareRouter = require('./share');
-app.use('/', shareRouter);
 app.use('/share', shareRouter);
 
 // In-memory store: sid -> { qrData }
@@ -110,6 +109,46 @@ app.get('/api/sessions/:sid/credentials', (req, res) => {
     status: 'ready',
     credentials: credentials
   });
+});
+
+// GET /api/share/poll - Alternative endpoint for shared data polling
+app.get('/api/share/poll', (req, res) => {
+  console.log('API share poll endpoint hit with sid:', req.query.sid);
+  const { sid } = req.query;
+  if (!sid) return res.status(400).json({ error: 'Missing sid' });
+  
+  // Import the share router's session management
+  const shareSessions = global._shareSessions || new Map();
+  const sessionTimeouts = global._sessionTimeouts || new Map();
+  
+  const timestamp = sessionTimeouts.get(sid);
+  if (!timestamp) {
+    console.log('No session timeout found for sid:', sid);
+    return res.json({ status: 'waiting' });
+  }
+  
+  const now = Date.now();
+  const SESSION_TIMEOUT = 5 * 60 * 1000; // 5 minutes
+  if (now - timestamp > SESSION_TIMEOUT) {
+    // Session expired, clean up
+    console.log('Session expired for sid:', sid);
+    shareSessions.delete(sid);
+    sessionTimeouts.delete(sid);
+    return res.json({ status: 'waiting' });
+  }
+  
+  const shared = shareSessions.get(sid);
+  if (!shared) {
+    console.log('No shared data found for sid:', sid);
+    return res.json({ status: 'waiting' });
+  }
+  
+  console.log('Found shared data for sid:', sid, 'type:', shared.url ? 'url' : 'image');
+  // One-time use: clear after sending
+  shareSessions.delete(sid);
+  sessionTimeouts.delete(sid);
+  
+  res.json({ status: 'ready', shared });
 });
 
 
