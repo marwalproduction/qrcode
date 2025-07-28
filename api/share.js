@@ -48,7 +48,7 @@ function getSession(sid) {
 
 // Multer setup for file uploads (in memory)
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fileSize: 10 * 1024 * 1024 } }); // 2MB limit
+const upload = multer({ storage: storage, limits: { fileSize: 2 * 1024 * 1024 } }); // 2MB limit
 
 function renderSharePage({ sid, message, messageType, urlValue }) {
   return `
@@ -106,7 +106,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           font-weight: 400;
         }
         .container {
-          width: 100vw;
+          width: 95vw;
           max-width: 460px;
           background: rgba(30, 30, 30, 0.7);
           border-radius: 20px;
@@ -144,7 +144,7 @@ function renderSharePage({ sid, message, messageType, urlValue }) {
           border: 1px solid #00e07a;
         }
         input[type="url"] {
-          width: -webkit-fill-available;
+          width: 100%;
           padding: 12px 16px;
           font-size: 1rem;
           border: 1px solid #444;
