@@ -863,6 +863,7 @@ router.get('/share', (req, res) => {
 
 // Handle form submission (POST)
 router.post('/share', upload.array('image'), (req, res) => {
+  console.log('Share POST endpoint hit with sid:', req.body.sid);
   const { sid, url } = req.body;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error', urlValue: url }));
@@ -870,26 +871,34 @@ router.post('/share', upload.array('image'), (req, res) => {
   let shared = {};
   if (url && url.startsWith('http')) {
     shared.url = url;
+    console.log('Storing URL for sid:', sid, 'url:', url);
   }
   if (req.files && req.files.length > 0) {
     // Store images as base64 (for demo, not for production)
     shared.images = req.files.map(f => `data:${f.mimetype};base64,${f.buffer.toString('base64')}`);
     totalFilesShared.count += req.files.length;
+    console.log('Storing', req.files.length, 'images for sid:', sid);
   }
   if (!shared.url && (!shared.images || shared.images.length === 0)) {
     return res.status(400).send(renderSharePage({ sid, message: 'Please provide a valid URL or upload an image.', messageType: 'error', urlValue: url }));
   }
   createSession(sid, shared);
+  console.log('Session created for sid:', sid, 'with data type:', shared.url ? 'url' : 'images');
   // Show success message on same page
   res.send(renderSharePage({ sid, message: 'Shared successfully! You can close this page.', messageType: 'success', urlValue: '' }));
 });
 
 // API for extension to poll for shared data
 router.get('/poll', (req, res) => {
+  console.log('Share poll endpoint hit with sid:', req.query.sid);
   const { sid } = req.query;
   if (!sid) return res.status(400).json({ error: 'Missing sid' });
   const shared = getSession(sid);
-  if (!shared) return res.json({ status: 'waiting' });
+  if (!shared) {
+    console.log('No shared data found for sid:', sid);
+    return res.json({ status: 'waiting' });
+  }
+  console.log('Found shared data for sid:', sid, 'type:', shared.url ? 'url' : 'image');
   // One-time use: clear after sending
   // The session will be cleaned up by the periodic cleanup
   res.json({ status: 'ready', shared });
