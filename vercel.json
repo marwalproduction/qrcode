@@ -1,9 +1,6 @@
 {
   "version": 2,
   "routes": [
-    { "src": "/api/sessions", "dest": "/api/index.js" },
-    { "src": "/api/sessions/(.*)", "dest": "/api/index.js" },
-    { "src": "/api/verify", "dest": "/api/index.js" },
     { "src": "/(.*)", "dest": "/api/index.js" }
   ]
 } 
