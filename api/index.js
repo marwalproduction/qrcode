@@ -546,7 +546,8 @@ app.get('/', (req, res) => {
             }
             
             .reload-btn {
-                display: inline-block;
+                display: block;
+                margin: 20px auto 0;
                 padding: 18px 28px;
                 background: linear-gradient(135deg, #ff3b30, #ff453a);
                 color: white;
@@ -556,7 +557,6 @@ app.get('/', (req, res) => {
                 font-size: 1rem;
                 cursor: pointer;
                 transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-                margin-top: 20px;
                 position: relative;
                 z-index: 1;
             }
@@ -926,6 +926,9 @@ app.get('/', (req, res) => {
                                     </a>
                                     <br><br>
                                     <button onclick="location.reload()" class="reload-btn">
+                                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                            <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                        </svg>
                                         Reload to receive more
                                     </button>
                                 \`;
@@ -946,12 +949,11 @@ app.get('/', (req, res) => {
                                         <a href="\${dataUrl}" download="\${fileData.name}" class="download-btn">
                                             Download Image
                                         </a>
-                                        <br>
-                                        <button onclick="downloadImage('\${dataUrl}', '\${fileData.name}')" class="download-btn" style="background: linear-gradient(135deg, #ff9500, #ff6b35); margin-top: 10px;">
-                                            Download Image (Alternative)
-                                        </button>
                                         <br><br>
                                         <button onclick="location.reload()" class="reload-btn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                            </svg>
                                             Reload to receive more
                                         </button>
                                     \`;
@@ -969,6 +971,9 @@ app.get('/', (req, res) => {
                                         </a>
                                         <br><br>
                                         <button onclick="location.reload()" class="reload-btn">
+                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px; vertical-align: middle;">
+                                                <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
+                                            </svg>
                                             Reload to receive more
                                         </button>
                                     \`;
@@ -991,16 +996,6 @@ app.get('/', (req, res) => {
             
             // Start polling after a short delay
             setTimeout(pollForData, 1000);
-            
-            // Function to download image
-            function downloadImage(dataUrl, fileName) {
-                const link = document.createElement('a');
-                link.href = dataUrl;
-                link.download = fileName;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-            }
         </script>
     </body>
     </html>
