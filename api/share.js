@@ -834,7 +834,7 @@ router.get('/', async (req, res) => {
           }
         }
         function pollShared() {
-          fetch('/share/poll?sid=' + sid)
+          fetch('/poll?sid=' + sid)
             .then(function(res) { return res.json(); })
             .then(function(data) {
               if (data.status === 'ready') {
@@ -853,7 +853,8 @@ router.get('/', async (req, res) => {
 });
 
 // Serve the share page (GET)
-router.get('/share', (req, res) => {
+router.get('/', (req, res) => {
+  console.log('Share GET endpoint hit with sid:', req.query.sid);
   const { sid, msg, type, url } = req.query;
   if (!sid) {
     return res.status(400).send(renderSharePage({ sid: '', message: 'Missing session ID (sid)', messageType: 'error' }));
@@ -862,7 +863,7 @@ router.get('/share', (req, res) => {
 });
 
 // Handle form submission (POST)
-router.post('/share', upload.array('image'), (req, res) => {
+router.post('/', upload.array('image'), (req, res) => {
   console.log('Share POST endpoint hit with sid:', req.body.sid);
   const { sid, url } = req.body;
   if (!sid) {
