@@ -13,7 +13,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Multer for file uploads
 const storage = multer.memoryStorage();
-const upload = multer({ storage: storage, limits: { fileSize: 5 * 1024 * 1024 } }); // 5MB limit per file
+const upload = multer({ storage: storage, limits: { fileSize: 25 * 1024 * 1024 } }); // 5MB limit per file
 
 // In-memory stores
 const sessions = new Map();
